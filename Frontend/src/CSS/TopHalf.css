@@ -1,0 +1,30 @@
+.top-half {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #f4f4f4; /* Optional: color for the top half background */
+}
+
+.card {
+    width: 30%; /* Each card takes up 30% of the container width */
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card1 {
+    height: 220px;
+}
+
+.card2 {
+    height: 220px;
+}
+
+.card3 {
+    height: 220px;
+}

@@ -3,6 +3,7 @@ import './App.css';
 import Navbar from './JS/Navbar';
 import LNavbar from './JS/LNavbar';
 import Midbar from './JS/Midbar';
+import TopHalf from './JS/TopHalf';
 
 function App() {
     return (
@@ -10,6 +11,7 @@ function App() {
             <Navbar />
             <LNavbar />
             <Midbar />
+            <TopHalf />
         </div>
     );
 }
