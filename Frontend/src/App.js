@@ -9,9 +9,9 @@ import BottomHalf from './JS/BottomHalf';
 function App() {
     return (
         <div className="App">
-            <Navbar />
             <LNavbar />
-            <TopHalf />
+            <Navbar />
+                        <TopHalf />
             <Midbar />
             <BottomHalf />
         </div>

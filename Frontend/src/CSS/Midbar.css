@@ -1,11 +1,9 @@
 .midbar {
     position: fixed;
-    top: 50%;
-    left: 4%;
+    top: calc(50vh - 0.2cm);
+    left: 5%;
     right: 0;
     height: 1cm;
-    transform: translateY(-50%);
-    /*background-color: #333;*/
     z-index: 50;
     padding: 10px;
     text-align: center;
@@ -14,6 +12,8 @@
     justify-content: space-between;
     align-items: center;
 }
+
+
 
 .file-input {
     display: none;
@@ -27,6 +27,7 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 16px;
 }
 
 .upload-button:hover {
