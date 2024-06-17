@@ -1,0 +1,26 @@
+.bottom-half {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box; 
+    background-color: #ececec;
+}
+
+.bottom-half .card {
+    padding: 20px;
+    margin: 10px 0;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    min-height: 260px;
+}
+
+
+.bottom-half .card1 {
+    width: 500px;
+}
+
+.bottom-half .card2 {
+    width: 860px;
+}

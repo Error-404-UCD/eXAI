@@ -2,29 +2,29 @@
     display: flex;
     justify-content: space-around;
     padding: 20px;
-    background-color: #f4f4f4; /* Optional: color for the top half background */
+    background-color: #ececec;
 }
 
-.card {
-    width: 30%; /* Each card takes up 30% of the container width */
+.top-half .card {
     padding: 20px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin: 10px;
+    margin: 10px 0;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 240px;
 }
 
-.card1 {
-    height: 220px;
+.top-half .card1 {
+    width: 210px;
 }
 
-.card2 {
-    height: 220px;
+.top-half .card2 {
+    width: 460px;
 }
 
-.card3 {
-    height: 220px;
+.top-half .card3 {
+    width: 560px;
 }
