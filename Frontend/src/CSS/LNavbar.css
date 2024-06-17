@@ -7,7 +7,7 @@
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Ensure icons are always centered */
+    align-items: center;
     justify-content: center;
     z-index: 100;
 }
@@ -55,5 +55,5 @@
 }
 
 .navbar.open .nav-text {
-    visibility: visible; /* Make text visible when navbar is open */
+    visibility: visible;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../CSS/Midbar.css'; // Ensure this path is correct based on your project structure
+import '../CSS/Midbar.css'; 
 
 function Midbar() {
     const [image, setImage] = useState(null);

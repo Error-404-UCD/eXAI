@@ -34,13 +34,13 @@
 }
 
 .upload-section {
-    margin-left: 3cm; /* Set the margin to 3cm from the left */
+    margin-left: 3cm;
 }
 
 .predict-section {
-    position: absolute;  /* Use absolute positioning within the relative context of its container */
-    left: 50%;  /* Set to half of the viewport width */
-    transform: translateX(-50%);  /* Shift it back by half its own width to truly center it */
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
 }
