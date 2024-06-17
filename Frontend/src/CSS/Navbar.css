@@ -1,0 +1,9 @@
+.Navbar-header {
+    height: 6.67vh; /* Adjusting the height to 1/15th of the screen */
+    background-color: #282c34;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+}
