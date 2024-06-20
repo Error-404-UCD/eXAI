@@ -1,12 +1,39 @@
 import React, { useState } from 'react';
 import '../CSS/Midbar.css'; 
+import axios from "axios";
+import BottomHalf from "./BottomHalf";
 
 function Midbar() {
     const [image, setImage] = useState(null);
     const [prediction, setPrediction] = useState('');
+    const uploadLink = "http://127.0.0.1:5000/upload";
 
     const handleUpload = (event) => {
-        setImage(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      // create a new FormData object and append the file to it
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // make a POST request to the File Upload API with the FormData object and Rapid API headers
+      // Reference: https://www.npmjs.com/package/axios
+      axios
+        .post(uploadLink, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          // handle the response
+          console.log("Got data :)");
+          console.log(response);
+        })
+        .catch((error) => {
+          // handle errors
+          console.log(error);
+        });
+
+      console.log("Request sent!");
+      //setImage();
     };
 
     const handlePredict = () => {
