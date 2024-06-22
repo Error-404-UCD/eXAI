@@ -1,6 +1,6 @@
 
 import '../CSS/BottomHalf.css';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../CSS/Midbar.css";
 import axios from "axios";
 import HeatMap from "./HeatMap";
@@ -11,9 +11,11 @@ function BottomHalf() {
 
     const [image, setImage] = useState(null);
     const [data, setData] = useState(null);
+    const [testState, setState] = useState(false);
     const uploadLink = "http://127.0.0.1:5000/upload";
 
     const handleUpload = (event) => {
+        setState(false);
       const file = event.target.files[0];
       // create a new FormData object and append the file to it
       const formData = new FormData();
@@ -30,15 +32,16 @@ function BottomHalf() {
         .then((response) => {
           // handle the response
           console.log("Got data :)");
-          console.log(response);
+        //   console.log(response);
           setData(response.data);
+          setState(true);
         })
         .catch((error) => {
           // handle errors
           console.log(error);
         });
 
-      console.log("Request sent!");
+      // console.log("Request sent!");
       //setImage();
     };
 
@@ -76,14 +79,14 @@ function BottomHalf() {
           <h3>Card 1</h3>
           {/* {data} */}
           <p>Details for Card 1</p>
-          <HeatMap/>
+
+          {testState ? <HeatMap heatData={data} /> : null}
         </div>
         {/* <div className="card card2">
                 <h3>Card 2</h3>
                 <p>Details for Card 2</p>
             </div> */}
       </div>
-
     );
 }
 

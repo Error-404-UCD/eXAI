@@ -1,14 +1,56 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
-const HeatMap = () => {
+const HeatMap = (data) => {
   const ref = useRef();
+  var max = 0.01;
+  var min = -0.01;
+
+  function remapData(data) {
+
+    // console.log(data.heatData.array[0][0][0][0][0]);
+
+   
+    var mapped_data = []
+
+
+    var ndata = data.heatData.array[0][0];
+    // Loop through all row pixels i
+    for (var i = 0; i < ndata.length; ++i) {
+      // Loop through all col pixels j
+      for (var j = 0; j < ndata[i].length; ++j) {
+        // For each number value 0...9 k
+        for (var k = 0; k < ndata[i][j].length; ++k) {
+          // Set new row = i
+          // Set new col = k * count_of_cols + j
+          // Set new val = data[i][j][k]
+          const newVal = ndata[i][j][k];
+          mapped_data.push({
+            col: i,
+            row: k * ndata[i].length + j,
+            value: newVal,
+          });
+
+          if (newVal < min) {
+            min = newVal;
+          }
+          if (newVal > max) {
+            max = newVal
+          }
+        }
+      }
+    }
+        
+    return mapped_data;
+            
+                
+  }
 
   useEffect(() => {
     // set the dimensions and margins of the graph
-    const margin = { top: 30, right: 30, bottom: 70, left: 60 },
-      width = 460 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+    const margin = { top: 0, right: 0, bottom: 0, left: 0 },
+      width = 1000 - margin.left - margin.right,
+      height = 100 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -19,50 +61,64 @@ const HeatMap = () => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    // var data = {}
+
     // Labels of row and columns
-    var myGroups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-    var myVars = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"];
+    var myGroups = [...Array(280).keys()].map((i) => i + 1);
+    var myVars = [...Array(28).keys()].map((i) => i + 1);
 
     // Build X scales and axis:
     var x = d3.scaleBand().range([0, width]).domain(myGroups).padding(0.01);
     svg
       .append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+
+      //console.log(data);
+    var mapped_data = remapData(data);
+    console.log(mapped_data);
 
     // Build X scales and axis:
     var y = d3.scaleBand().range([height, 0]).domain(myVars).padding(0.01);
-    svg.append("g").call(d3.axisLeft(y));
+    svg
+      .append("g")
+      .call(d3.axisLeft(y).tickValues([]))
+      .call(d3.axisTop(x).tickValues([]))
+      .call(d3.axisBottom(x).tickValues([]));
+      //.call(d3.axisTop(x).tickValues([]))
+      //.call(d3.axisTop(y).tickValues([]));
 
     // Build color scale
-    var myColor = d3.scaleLinear().range(["white", "#69b3a2"]).domain([1, 100]);
+    var myColor = d3
+      .scaleLinear()
+      .range(["#005acd", "#ffffff", "#f8f8f8"])
+      .domain([min, 0.0, max]);
 
     //Read the data
-    d3.csv(
-      "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/heatmap_data.csv" )
-      .then (
-      function (data) {
+    // Reference: https://kamibrumi.medium.com/getting-started-with-react-d3-js-d86ccea05f08
+    // Heatmap Reference: https://d3-graph-gallery.com/graph/heatmap_basic.html
+    // var data = {};
 
-        svg
-          .selectAll()
-          .data(data, function (d) {
-            return d.group + ":" + d.variable;
-          })
-          .enter()
-          .append("rect")
-          .attr("x", function (d) {
-            return x(d.group);
-          })
-          .attr("y", function (d) {
-            return y(d.variable);
-          })
-          .attr("width", x.bandwidth())
-          .attr("height", y.bandwidth())
-          .style("fill", function (d) {
-            return myColor(d.value);
-          });
-      }
-    );
+
+    svg
+      .selectAll()
+      .data(mapped_data, function (d) {
+        return d.row + ":" + d.col;
+      })
+      .enter()
+      .append("rect")
+      .attr("x", function (d) {
+        return x(d.row);
+      })
+      .attr("y", function (d) {
+        return y(d.col);
+      })
+      .attr("width", 10)
+      .attr("height", 10)
+      .style("fill", function (d) {
+        return myColor(d.value);
+      });
+
+    
   }, []);
 
   return <svg width={560} height={500} id="heatmap" ref={ref} />;
