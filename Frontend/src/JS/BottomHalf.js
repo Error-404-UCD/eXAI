@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import "../CSS/Midbar.css";
 import axios from "axios";
 import HeatMap from "./HeatMap";
-
+import Canvas from "./Canvas.js";
 
 function BottomHalf() {
 
@@ -17,6 +17,7 @@ function BottomHalf() {
     const handleUpload = (event) => {
         setState(false);
       const file = event.target.files[0];
+      
       // create a new FormData object and append the file to it
       const formData = new FormData();
       formData.append("file", file);
@@ -35,6 +36,7 @@ function BottomHalf() {
         //   console.log(response);
           setData(response.data);
           setState(true);
+	  setImage(URL.createObjectURL(file));
         })
         .catch((error) => {
           // handle errors
@@ -52,36 +54,44 @@ function BottomHalf() {
 
     return (
       <div className="bottom-half">
-        <div className="midbar">
-          <div className="upload-section">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleUpload}
-              id="file-upload"
-              className="file-input"
-            />
-            <label htmlFor="file-upload" className="upload-button">
-              Upload Image
-            </label>
-            {image && <span className="file-status">File Uploaded</span>}
-          </div>
-          <div className="predict-section">
-            <button onClick={handlePredict} className="predict-button">
-              Predict
-            </button>
-            {/* {prediction && (
+        <div className="card card1">
+          <div className="midbar">
+            <div className="upload-section">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUpload}
+                id="file-upload"
+                className="file-input"
+              />
+              <label htmlFor="file-upload" className="upload-button">
+                Upload Image
+              </label>
+              {
+		      // image && <span className="file-status">File Uploaded</span>
+	      }
+            </div>
+            <div className="predict-section">
+              {/* <button onClick={handlePredict} className="predict-button">
+                Predict
+              </button> */}
+              {/* {prediction && (
               <span className="prediction-result">{prediction}</span>
             )} */}
+            </div>
           </div>
-        </div>
-        <div className="card card1">
-          <h3>Card 1</h3>
-          {/* {data} */}
-          <p>Details for Card 1</p>
+          <h3>SHAP value Heat Map</h3>
 
-          {testState ? <HeatMap heatData={data} /> : null}
-        </div>
+          { 
+		testState ? 
+		<div>
+  			<Canvas imgUrl={image} width={1000} height={100} imgWidth={100} imgHeight={100} posX={0} posY={0} count={10} alpha={80} heatData={data}/>
+		  	<HeatMap heatData={data}/> 
+		</div>
+		: null 
+	  }
+        	
+	</div>
         {/* <div className="card card2">
                 <h3>Card 2</h3>
                 <p>Details for Card 2</p>

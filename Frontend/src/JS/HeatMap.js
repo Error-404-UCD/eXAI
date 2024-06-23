@@ -2,10 +2,11 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
 const HeatMap = (data) => {
-  const ref = useRef();
-  var max = 0.01;
-  var min = -0.01;
-
+  	const ref = useRef();
+    	const outputWidth = 1000;
+  	const outputHeight = 100;
+	var max = 0.1;
+  	var min = -0.1;
   function remapData(data) {
 
     // console.log(data.heatData.array[0][0][0][0][0]);
@@ -32,10 +33,10 @@ const HeatMap = (data) => {
           });
 
           if (newVal < min) {
-            min = newVal;
+            // min = newVal;
           }
           if (newVal > max) {
-            max = newVal
+            // max = newVal
           }
         }
       }
@@ -47,12 +48,13 @@ const HeatMap = (data) => {
   }
 
   useEffect(() => {
-    // set the dimensions and margins of the graph
-    const margin = { top: 0, right: 0, bottom: 0, left: 0 },
-      width = 1000 - margin.left - margin.right,
-      height = 100 - margin.top - margin.bottom;
 
-    // append the svg object to the body of the page
+    	// set the dimensions and margins of the graph
+    	const margin = { top: 0, right: 0, bottom: 0, left: 0 },
+      	width = outputWidth - margin.left - margin.right,
+      	height = outputHeight - margin.top - margin.bottom;
+
+    	// append the svg object to the body of the page
     const svg = d3
       .select(ref.current)
       .append("svg")
@@ -90,7 +92,7 @@ const HeatMap = (data) => {
     // Build color scale
     var myColor = d3
       .scaleLinear()
-      .range(["#005acd", "#ffffff", "#f8f8f8"])
+      .range(["#005acd", "rgba(255, 255, 255, 0)", "#f8f8f8"])
       .domain([min, 0.0, max]);
 
     //Read the data
@@ -118,10 +120,10 @@ const HeatMap = (data) => {
         return myColor(d.value);
       });
 
-    
+   // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, []);
 
-  return <svg width={560} height={500} id="heatmap" ref={ref} />;
+  return <svg width={outputWidth} height={outputHeight} id="heatmap" ref={ref} />;
 };
 
 export default HeatMap;
