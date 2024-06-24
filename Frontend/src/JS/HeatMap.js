@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 
 const HeatMap = (data) => {
   	const ref = useRef();
-    	const outputWidth = 1000;
-  	const outputHeight = 100;
+    	const outputWidth = 1400;
+  	const outputHeight = 140;
 	var max = 0.1;
   	var min = -0.1;
   function remapData(data) {

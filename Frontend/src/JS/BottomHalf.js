@@ -33,7 +33,7 @@ function BottomHalf() {
         .then((response) => {
           // handle the response
           console.log("Got data :)");
-        //   console.log(response);
+        console.log(response);
           setData(response.data);
           setState(true);
 	  setImage(URL.createObjectURL(file));
@@ -85,8 +85,8 @@ function BottomHalf() {
           { 
 		testState ? 
 		<div>
-  			<Canvas imgUrl={image} width={1000} height={100} imgWidth={100} imgHeight={100} posX={0} posY={0} count={10} alpha={80} heatData={data}/>
-		  	<HeatMap heatData={data}/> 
+  			<Canvas imgUrl={image} width={1400} height={140} imgWidth={140} imgHeight={140} posX={0} posY={0} count={10} alpha={80} heatData={data}/>
+		  	{<HeatMap heatData={data}/> }
 		</div>
 		: null 
 	  }
