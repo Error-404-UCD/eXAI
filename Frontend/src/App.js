@@ -11,8 +11,8 @@ function App() {
         <div className="App">
             <LNavbar />
             <Navbar />
-                        <TopHalf />
-            <Midbar />
+            <TopHalf />
+            {/* <Midbar /> */}
             <BottomHalf />
         </div>
     );
