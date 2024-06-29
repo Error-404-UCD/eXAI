@@ -7,6 +7,10 @@
 .pnp.js
 /Frontend/package-lock.json
 
+/Backend/data/Astronomy
+/Backend/app/virtualenv
+/Backend/models
+
 # testing
 /coverage
 
