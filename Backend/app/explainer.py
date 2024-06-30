@@ -4,7 +4,8 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 import random
-from tensorflow.keras.preprocessing.image import img_to_array
+import shap
+from utils.imager import Imager
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
@@ -34,9 +35,9 @@ class Explainer:
         self.checkpoint_dir = os.path.dirname(checkpoint_path)
 
         # Parameters
-        self.target_img_height = int(target_img_height)
-        self.target_img_width = int(target_img_width)
-        self.batch_size = int(batch_size)
+        self.target_img_height = (target_img_height)
+        self.target_img_width = (target_img_width)
+        self.batch_size = (batch_size)
 
         # Prepare lists to hold file paths and labels
         self.file_paths = []
@@ -45,21 +46,17 @@ class Explainer:
         self.class_counts = {}
 
         for filename in os.listdir(self.image_folder):
-            class_name = filename.split('_')[0]
-            self.class_names.add(class_name)
-            if class_name not in self.class_counts:
-                self.class_counts[class_name] = 0
-            self.class_counts[class_name] += 1
-
-        self.class_names = list(self.class_names)
-        # print(self.class_counts)
-
-
-        for filename in os.listdir(self.image_folder):
             if filename.endswith(('jpg', 'png', 'jpeg')):  # Ensure only image files are processed
                 class_name = filename.split('_')[0]
+                self.class_names.add(class_name)
+                if class_name not in self.class_counts:
+                    self.class_counts[class_name] = 0
+                self.class_counts[class_name] += 1
+
                 self.file_paths.append(os.path.join(image_folder, filename))
                 self.labels.append(class_name)
+
+        self.class_names = list(self.class_names)           
 
 
         label_map = { class_name: 
@@ -74,19 +71,17 @@ class Explainer:
             self.labels, 
             test_size=0.2, 
             stratify=self.labels)
+        
+        print(f"Train paths: {self.train_paths}")
+        print(f"Val paths: {self.val_paths}")
+        print(f"Train Labels: {self.train_labels}")
+        print(f"Val Labels: {self.val_labels}")
+
 
     # Function to resize images
-    def resize_image(self, img_path, target_size):
-        img = Image.open(img_path)
-        img = img.resize(target_size)
-        return img
+   
 
-    def load_image(self, img_path, target_size):
-        img = self.resize_image(img_path, target_size)
-        img = img_to_array(img)
-        img = np.expand_dims(img, axis=0)
-        img = img / 255.0
-        return img
+   
 
     # Custom data generator
     def data_generator(self, file_paths, labels, batch_size, img_height, img_width):
@@ -98,8 +93,8 @@ class Explainer:
                 
                 images = []
                 for path in batch_paths:
-                    img = self.resize_image(path, (img_height, img_width))
-                    img = img_to_array(img)
+                    img = Imager.resize_image(path, (img_height, img_width))
+                    img = Imager.img_to_array(img)
                     img /= 255.0
                     images.append(img)
                     
@@ -129,7 +124,7 @@ class Explainer:
             Conv2D(32, (3, 3), activation='relu', input_shape=(
                 self.target_img_height, 
                 self.target_img_width, 
-                3)),
+                3)), # 3 for RGB, 2 for Greyscale
             MaxPooling2D((2, 2)),
             Conv2D(64, (3, 3), activation='relu'),
             MaxPooling2D((2, 2)),
@@ -137,7 +132,7 @@ class Explainer:
             MaxPooling2D((2, 2)),
             Flatten(),
             Dense(512, activation='relu'),
-            Dense(3, activation='softmax')
+            Dense(len(self.class_names), activation='softmax')
         ])
 
         self.model.compile(
@@ -166,7 +161,7 @@ class Explainer:
     def predict(self, imgs):
         return self.model.predict(imgs)
     
-    def predict_random(self):
+    def explain_lime_random(self):
         self.build_train_model()
 
         random_index = random.randint(0, len(self.val_paths) - 1)
@@ -174,28 +169,48 @@ class Explainer:
         true_label = self.val_labels[random_index]
 
         # Load and preprocess the image
-        img = self.load_image(img_path, (self.target_img_width, self.target_img_height))
-
+        img = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
+        print(f"img0: {img.shape}")
         # Predict the class of the image
         predictions = self.model.predict(img)
         predicted_class = np.argmax(predictions[0])
         predicted_class_name = self.class_names[predicted_class]
 
         # Create a LIME explainer
-        explainer = lime_image.LimeImageExplainer()
+        lime_explainer = lime_image.LimeImageExplainer()
 
 
         # Generate LIME explanation
-        explanation = explainer.explain_instance(img[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
+        lime_explanation = lime_explainer.explain_instance(img[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
 
         # Display the explanation
-        temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
+        temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
 
         # Get the weights for the top label
-        weights = explanation.local_exp[explanation.top_labels[0]]
+        weights = lime_explanation.local_exp[lime_explanation.top_labels[0]]
         weights = sorted(weights, key=lambda x: x[1], reverse=True)
 
         # Convert weights to a DataFrame
         df_weights = pd.DataFrame(weights, columns=['Superpixel', 'Weight'])
 
-        print(df_weights)
+        # print(df_weights)
+        return df_weights
+    
+    def explain_shap_random(self):
+        self.build_train_model()   
+        random_index = random.randint(0, len(self.val_paths) - 1)
+        img_path = self.val_paths[random_index]
+        test_image = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
+        return self.get_shap_explanation(test_image)
+    
+    def get_shap_explanation(self, test_image):
+        self.build_train_model()
+        images = []
+        for i in range(103):
+            images.append(Imager.load_image(self.val_paths[i], (self.target_img_width, self.target_img_height)))
+        background = images[:100]
+        e = shap.DeepExplainer(self.model, background)
+        shap_values = e.shap_values(test_image)
+        print(f"Shap values: {shap_values.shape}")
+        return shap_values
+
