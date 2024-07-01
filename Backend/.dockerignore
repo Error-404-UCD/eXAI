@@ -1,0 +1,7 @@
+/data
+/app/virtualenv
+/models
+
+.DS_Store
+/__pycache__
+*.py[cod]

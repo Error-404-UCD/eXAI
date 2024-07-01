@@ -5,7 +5,7 @@ import configparser
 from flask import Flask
 from flask import request, jsonify
 from flask_cors import CORS
-
+import os
 import json
 
 
@@ -13,10 +13,16 @@ import json
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config.read("config.ini")
-    
-    img_folder          = str(config["MLMODEL"]["AstronomyImagesPath"])
-    checkpoint_path     = str(config["MLMODEL"]["CheckpointsPath"]+
+
+    # Need to provide absolute path
+    # https://stackoverflow.com/questions/77226532/configparser-for-ini-file-throwing-key-error-when-running-using-docker-image-in
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_file_path = os.path.join(script_dir, 'config.ini')
+    config.read(config_file_path)
+    print(list(config.keys()))
+    img_folder          = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
+    checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
                             config["MLMODEL"]["AstronomyModelCheckpointName"])
     target_img_width    = int(config["MLMODEL"]["TargetImageWidth"])
     target_img_height   = int(config["MLMODEL"]["TargetImageHeight"])
