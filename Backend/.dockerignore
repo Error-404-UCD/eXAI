@@ -1,5 +1,5 @@
 /data
-/app/virtualenv
+/app/pyenv
 /models
 
 .DS_Store

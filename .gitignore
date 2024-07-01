@@ -8,7 +8,7 @@
 /Frontend/package-lock.json
 
 /Backend/data
-/Backend/app/virtualenv
+/Backend/app/pyenv
 /Backend/models
 
 # testing
