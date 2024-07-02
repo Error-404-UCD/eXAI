@@ -8,7 +8,8 @@ from flask_cors import CORS
 import os
 import json
 
-
+import h5py
+print("h5py file location:", h5py.__file__)
 
 
 if __name__ == "__main__":
@@ -17,10 +18,12 @@ if __name__ == "__main__":
     # Need to provide absolute path
     # https://stackoverflow.com/questions/77226532/configparser-for-ini-file-throwing-key-error-when-running-using-docker-image-in
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file_path = os.path.join(script_dir, 'config.ini')
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = "app"
+    config_file_path = os.path.join(script_dir, "config.ini")
     config.read(config_file_path)
-    print(list(config.keys()))
+    config.read(config_file_path)
+    # print(list(config.keys()))
     img_folder          = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
     checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
                             config["MLMODEL"]["AstronomyModelCheckpointName"])
@@ -60,4 +63,5 @@ if __name__ == "__main__":
     
         return encodedNumpyData
     
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

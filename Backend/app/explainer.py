@@ -72,10 +72,10 @@ class Explainer:
             test_size=0.2, 
             stratify=self.labels)
         
-        print(f"Train paths: {self.train_paths}")
-        print(f"Val paths: {self.val_paths}")
-        print(f"Train Labels: {self.train_labels}")
-        print(f"Val Labels: {self.val_labels}")
+        # print(f"Train paths: {self.train_paths}")
+        # print(f"Val paths: {self.val_paths}")
+        # print(f"Train Labels: {self.train_labels}")
+        # print(f"Val Labels: {self.val_labels}")
 
 
     # Function to resize images
