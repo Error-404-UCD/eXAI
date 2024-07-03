@@ -62,10 +62,10 @@ cd eXAI/Backend
  docker build -t docker-exai . 
 ```
 
-- Run the docker container. Here the port numbers are in the format > frontend_portnumber:docker_backend_portnumber. Make sure to write the frontend_port number in the React POST request URL (127.0.0.1:8000). Currently frontend_portnumber: 8000 and docker_backend_portnumber: 5000
+- Run the docker container. Here the port numbers are in the format > frontend_portnumber:docker_backend_portnumber. Make sure to write the frontend_port number in the React POST request URL (127.0.0.1:5000). HERE frontend_portnumber= 5000 and docker_backend_portnumber= 5000
 
 ```
- docker run -p 8000:5000 docker-exai  
+ docker run -p 5000:5000 docker-exai  
 ```
 - Wait for the model to train and the server to start. It will display a localhost URL. Note that the port number of this URL is connected to the exposed docker_backend_portnumber.
 

@@ -7,6 +7,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 import os
 import json
+import numpy as np
 
 import h5py
 print("h5py file location:", h5py.__file__)
@@ -39,15 +40,16 @@ if __name__ == "__main__":
             batch_size=batch_size
         )
     
-    explainer.explain_lime_random()
-    explainer.explain_shap_random()
+    # explainer.explain_lime_random()
+    # explainer.explain_shap_random()
 
     app = Flask(__name__)
+    # Use CORS when running server and the client on the same machine
     CORS(app)
 
     # https://rapidapi.com/guides/upload-files-react-axios
-    @app.route('/upload', methods=['GET', 'POST'])
-    def upload_file():
+    @app.route('/limeshapexplain', methods=['GET', 'POST'])
+    def limeshap_explain():
         print(f"Req: {len(request.files)}")
         if request.method == 'POST':
             f = request.files['file']
@@ -55,13 +57,32 @@ if __name__ == "__main__":
             image = Imager.load_image(f, 
                 (target_img_width,
                 target_img_height))
-            val = explainer.get_shap_explanation(image)
+            shapval = explainer.get_shap_explanation(image)
+            limeval = explainer.get_lime_explanations(image)
+            # print(limeval)
             # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
-            numpyData = {"array": val}
+            numpyData = {"shaparray": shapval, "limearray": limeval}
+            
+            encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
+    
+        return encodedNumpyData
+    
+    @app.route('/limeexplain', methods=['GET', 'POST'])
+    def lime_explain():
+        print(f"Req: {len(request.files)}")
+        if request.method == 'POST':
+            f = request.files['file']
+            print(f"Found file: {f}")
+            image = Imager.load_image(f, 
+                (target_img_width,
+                target_img_height))
+            val = explainer.get_lime_explanations(image)
+            # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
+            numpyData = {"limearray": val}
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
 
     
         return encodedNumpyData
     
-    port = int(os.environ.get('PORT', 8000))
+    port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)

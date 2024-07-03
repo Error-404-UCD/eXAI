@@ -12,7 +12,7 @@ function BottomHalf() {
     const [image, setImage] = useState(null);
     const [data, setData] = useState(null);
     const [testState, setState] = useState(false);
-    const uploadLink = "http://127.0.0.1:8000/upload";
+    const uploadLink = "http://127.0.0.1:5000/limeshapexplain";
 
     const handleUpload = (event) => {
         setState(false);

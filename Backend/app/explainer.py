@@ -214,3 +214,31 @@ class Explainer:
         print(f"Shap values: {shap_values.shape}")
         return shap_values
 
+    def get_lime_explanations(self, test_image):
+        self.build_train_model()
+         # Create a LIME explainer
+        lime_explainer = lime_image.LimeImageExplainer()
+        # Generate LIME explanation
+        lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
+        # print(f"Lime: {lime_explanation}")
+        # Display the explanation
+        temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
+        # print(f"test img: {test_image}")
+        # print(f"temp: {temp}")
+        # print(f"mask: {mask}")
+        print(f"top label: {lime_explanation.top_labels}")
+
+       
+        # print(f"top label[0]: {lime_explanation.top_labels[0]}")
+        # print(f"lime_explanation.local_exp: {lime_explanation.local_exp}")
+        # Convert to regular dictionary object
+        output = {}
+        for key, value in lime_explanation.local_exp.items():
+            output[int(key)] = []
+            for a, b in value:
+                output[int(key)].append({int(a): b})
+        
+        # print(output)
+        # print(df_weights)
+        return {"mask": mask.tolist(), "local_exp": output}
+

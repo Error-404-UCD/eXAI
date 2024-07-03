@@ -15,7 +15,7 @@ const HeatMap = (data) => {
     var mapped_data = []
 
 
-    var ndata = data.heatData.array[0][0];
+    var ndata = data.heatData.shaparray[0][0];
     // Loop through all row pixels i
     for (var i = 0; i < ndata.length; ++i) {
       // Loop through all col pixels j

@@ -2,14 +2,14 @@
 
 # dependencies
 
-/Frontend/node_modules
+**/node_modules
 /.pnp
 .pnp.js
-/Frontend/package-lock.json
+**/package-lock.json
 
-/Backend/data
-/Backend/app/pyenv
-/Backend/models
+**/data
+**/pyenv
+**/models
 
 # testing
 /coverage
@@ -18,7 +18,7 @@
 /build
 
 # misc
-.DS_Store
+**/.DS_Store
 .env.local
 .env.development.local
 .env.test.local
@@ -30,5 +30,5 @@ yarn-error.log*
 
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
+**/__pycache__/
+**/*.py[cod]

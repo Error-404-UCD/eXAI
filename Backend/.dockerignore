@@ -1,7 +1,7 @@
-/data
-/app/pyenv
-/app/__pycache__
-/models
+**/data
+**/pyenv
+**/__pycache__
+**/models
 
 **/.DS_Store
 
