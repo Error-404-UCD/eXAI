@@ -40,7 +40,7 @@ pip install -r requirements.txt
 - Start the server in the Backend folder
 
 ```
-python3 app/server_launch.py
+python app/server_launch.py
 ```
 
 
