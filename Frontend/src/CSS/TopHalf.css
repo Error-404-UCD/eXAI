@@ -27,4 +27,42 @@
 
 .top-half .card3 {
     width: 560px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.top-half .card3 canvas {
+    border: 2px solid black;
+    margin-top: 10px;
+}
+
+.top-half .card3 div {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.top-half .card3 input[type="range"],
+.top-half .card3 input[type="color"] {
+    margin: 0 10px;
+}
+
+.top-half .card3 button {
+    padding: 5px 10px;
+    margin-left: 10px;
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.top-half .card3 button:hover {
+    background-color: #f0f0f0;
+}
+
+.top-half .card3 .active {
+    background-color: #4CAF50;
+    color: white;
 }
