@@ -45,6 +45,7 @@ python3 app/server_launch.py
 
 
 <h2> To run with Docker</h2>
+
 - Clone the project
 
 ```
@@ -69,11 +70,13 @@ cd eXAI/Backend
 - Wait for the model to train and the server to start. It will display a localhost URL. Note that the port number of this URL is connected to the exposed docker_backend_portnumber.
 
 <h2> FRONTEND </h2>
+
 - Change Directory to Frontend
 
 ```
 cd Frontend
 ```
+
 - Install NPM packages
 
 ```
