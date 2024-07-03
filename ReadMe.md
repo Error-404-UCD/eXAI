@@ -33,7 +33,7 @@ source pyenv/bin/activate
 pip install -r requirements.txt
 ```
 
-- Create folders named data and models
+- In the backend directory create folders named data and models
 - In models directory create another folder checkpoints
 - Download and extract the datasets in the data folder such that the path would be example, data/Astronomy/galaxies_heic0007b.jpg
 - Make sure that the datasets contain images that store classname_ in it's file name
