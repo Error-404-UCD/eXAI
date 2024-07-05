@@ -85,7 +85,7 @@ function LeftHalf() {
             </div>
           </div>
 
-          <div className="mt-8 shadow-xl rounded-md px-5 bg-pink-50">
+          <div className="mt-8 shadow-xl rounded-md px-5 py-5 bg-pink-50">
             <Canvas
               imgUrl={image}
               width={400}
