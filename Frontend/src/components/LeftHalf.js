@@ -57,7 +57,7 @@ function LeftHalf() {
       <div className="bottom-half py-5 px-5 bg-slate-200">
         {/* Show canvas and top buttons */}
         <div className="flex flex-col items-center h-screen">
-          <div className="flex flex-none justify-start w-full px-4">
+          <div className="flex flex-none justify-start w-full py-4">
             <div className="upload-section mr-4">
               <input
                 type="file"
@@ -99,6 +99,16 @@ function LeftHalf() {
               // heatData={data}
             />
             {/* {<HeatMap heatData={data} />} */}
+          </div>
+
+          <div className="flex flex-row mr-4 text-lg py-5">
+            <div className="">DATASET</div>
+            <div className="px-5">
+              <select value="Option 1">
+                <option value="Option 1">Astronomy</option>
+                <option value="Option 2">Bone Marrow</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>

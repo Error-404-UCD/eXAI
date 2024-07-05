@@ -5,7 +5,7 @@ import RightHalf from './components/RightHalf'
 
 function App() {
     return (
-      <div className="text-green-800">
+      <div className="flex flex-row">
         <LeftHalf />
         <RightHalf />
       </div>
