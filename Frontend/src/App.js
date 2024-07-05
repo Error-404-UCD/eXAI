@@ -1,20 +1,14 @@
 import React from 'react';
-import './App.css';
-import Navbar from './JS/Navbar';
-import LNavbar from './JS/LNavbar';
-import Midbar from './JS/Midbar';
-import TopHalf from './JS/TopHalf';
-import BottomHalf from './JS/BottomHalf';
+
+import LeftHalf from './components/LeftHalf';
+import RightHalf from './components/RightHalf'
 
 function App() {
     return (
-        <div className="App">
-            <LNavbar />
-            <Navbar />
-            <TopHalf />
-            {/* <Midbar /> */}
-            <BottomHalf />
-        </div>
+      <div className="text-green-800">
+        <LeftHalf />
+        <RightHalf />
+      </div>
     );
 }
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import '../CSS/Midbar.css'; 
+ 
 import axios from "axios";
-import BottomHalf from "./BottomHalf";
+import LeftHalf from "./LeftHalf";
 
 function Midbar() {
   // React Hooks Reference: https://react.dev/learn/updating-objects-in-state

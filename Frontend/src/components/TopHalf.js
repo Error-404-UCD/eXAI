@@ -1,5 +1,5 @@
 import React from 'react';
-import '../CSS/TopHalf.css';
+
 
 function TopHalf() {
     return (

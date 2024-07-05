@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../CSS/LNavbar.css';
+
 import { FaGithub, FaBook, FaDatabase, FaUsers } from 'react-icons/fa';
 
 function LNavbar() {
