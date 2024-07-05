@@ -68,7 +68,7 @@ function LeftHalf() {
               />
               <label
                 htmlFor="file-upload"
-                className="py-5 px-10 rounded-md text-sm font-semibold bg-pink-50 text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
+                className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
               >
                 UPLOAD IMAGE
               </label>
@@ -78,14 +78,14 @@ function LeftHalf() {
               <input type="button" accept="image/*" id="predict-class" hidden />
               <label
                 htmlFor="predict-class"
-                className="py-5 px-10 rounded-md text-sm font-semibold bg-pink-50 text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
+                className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
               >
                 PREDICT CLASS
               </label>
             </div>
           </div>
 
-          <div className="mt-8 shadow-xl rounded-md px-5 py-5 bg-pink-50">
+          <div className="mt-8 shadow-xl rounded-md px-5 py-5 bg-white">
             <Canvas
               imgUrl={image}
               width={400}
@@ -109,6 +109,13 @@ function LeftHalf() {
                 <option value="Option 2">Bone Marrow</option>
               </select>
             </div>
+          </div>
+          <div className="py-4">
+            <label
+              className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 shadow-md"
+            >
+              PREDICTION: Galaxy
+            </label>
           </div>
         </div>
       </div>

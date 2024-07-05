@@ -19,7 +19,7 @@ function RightHalf() {
             </div>
           </div>
 
-          <div className="mt-7 shadow-xl rounded-md px-5 py-5 bg-pink-50">
+          <div className="mt-7 shadow-xl rounded-md px-5 py-5 bg-white">
             <Canvas
               width={500}
               height={500}
