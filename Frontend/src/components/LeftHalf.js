@@ -112,7 +112,7 @@ function LeftHalf() {
           </div>
           <div className="py-4">
             <label
-              className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 shadow-md"
+              className="py-5 px-10 rounded-md text-lg font-bold bg-blue-400 text-white shadow-md"
             >
               PREDICTION: Galaxy
             </label>
