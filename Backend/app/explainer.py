@@ -33,7 +33,8 @@ class Explainer:
         # checkpoint_path = "../models/checkpoints/astro.weights.h5"
         self.checkpoint_path = checkpoint_path
         self.checkpoint_dir = os.path.dirname(checkpoint_path)
-        os.mkdir(self.checkpoint_dir) 
+        if not os.path.exists( self.checkpoint_dir):
+            os.mkdir(self.checkpoint_dir) 
 
         # Parameters
         self.target_img_height = (target_img_height)

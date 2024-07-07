@@ -45,7 +45,7 @@ const LeftHalf = ({fetchData}) => {
               </label>
             </div>
 
-            <div className="predict-section">
+            {/* <div className="predict-section">
               <input type="button" accept="image/*" id="predict-class" hidden />
               <label
                 htmlFor="predict-class"
@@ -53,7 +53,7 @@ const LeftHalf = ({fetchData}) => {
               >
                 PREDICT CLASS
               </label>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-8 shadow-xl rounded-md px-5 py-5 bg-white">
