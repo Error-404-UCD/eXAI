@@ -1,52 +1,23 @@
 
 import React, { useEffect, useState } from "react";
 
-import axios from "axios";
+
 import HeatMap from "./HeatMap";
 import Canvas from "./Canvas.js";
 
-function LeftHalf() {
+const LeftHalf = ({fetchData}) => {
 
 
     const [image, setImage] = useState(null);
     const [data, setData] = useState(null);
     const [heatmapState, setHeatmapState] = useState(false);
-    const uploadLink = "http://127.0.0.1:5000/limeshapexplain";
+    
 
-    const handleUpload = (event) => {
-      setHeatmapState(false);
- 
-      const file = event.target.files[0];
-      
-      // create a new FormData object and append the file to it
-      const formData = new FormData();
-      formData.append("file", file);
-      setImage(URL.createObjectURL(file));
-      // make a POST request to the File Upload API with the FormData object and Rapid API headers
-      // Reference: https://www.npmjs.com/package/axios
-      axios
-        .post(uploadLink, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          // handle the response
-          // console.log("Got data :)");
-          console.log(response);
-          setData(response.data);
-          setHeatmapState(true);
-	        
-        })
-        .catch((error) => {
-          // handle errors
-          console.log(error);
-        })
-      
-
-      // console.log("Request sent!");
-     
-    };
+    const uploadImage = (event) => {
+        const file = event.target.files[0];
+        setImage(URL.createObjectURL(file));
+    }
+    
 
     const handlePredict = () => {
     //   setPrediction("Error404"); // Placeholder for actual prediction logic
@@ -62,7 +33,7 @@ function LeftHalf() {
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleUpload}
+                onChange={(event) => {fetchData(event); uploadImage(event);}}
                 id="file-upload"
                 hidden
               />
@@ -104,19 +75,15 @@ function LeftHalf() {
           <div className="flex flex-row mr-4 text-lg py-5">
             <div className="">DATASET</div>
             <div className="px-5">
-              <select value="Option 1">
-                <option value="Option 1">Astronomy</option>
-                <option value="Option 2">Bone Marrow</option>
+              <select onChange={console.log("Dataset changed")}>
+                <option value="Astro">Astronomy</option>
+                <option value="BM">Bone Marrow</option>
               </select>
             </div>
           </div>
-          <div className="py-4">
-            <label
-              className="py-5 px-10 rounded-md text-lg font-bold bg-blue-400 text-white shadow-md"
-            >
-              PREDICTION: Galaxy
-            </label>
-          </div>
+
+          
+          
         </div>
       </div>
     );

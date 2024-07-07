@@ -1,14 +1,10 @@
 import React from 'react';
 
-import LeftHalf from './components/LeftHalf';
-import RightHalf from './components/RightHalf'
+import Main from "./components/Main"
 
 function App() {
     return (
-      <div className="flex flex-row">
-        <LeftHalf />
-        <RightHalf />
-      </div>
+        <Main />
     );
 }
 

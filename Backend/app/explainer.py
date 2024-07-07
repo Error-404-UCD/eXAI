@@ -33,6 +33,7 @@ class Explainer:
         # checkpoint_path = "../models/checkpoints/astro.weights.h5"
         self.checkpoint_path = checkpoint_path
         self.checkpoint_dir = os.path.dirname(checkpoint_path)
+        os.mkdir(self.checkpoint_dir) 
 
         # Parameters
         self.target_img_height = (target_img_height)
@@ -161,6 +162,11 @@ class Explainer:
     def predict(self, imgs):
         return self.model.predict(imgs)
     
+    def get_prediction(self, img):
+        predictions = self.model.predict(img)
+        predicted_class = np.argmax(predictions[0])
+        return self.class_names[predicted_class]
+    
     def explain_lime_random(self):
         self.build_train_model()
 
@@ -172,9 +178,7 @@ class Explainer:
         img = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
         print(f"img0: {img.shape}")
         # Predict the class of the image
-        predictions = self.model.predict(img)
-        predicted_class = np.argmax(predictions[0])
-        predicted_class_name = self.class_names[predicted_class]
+       
 
         # Create a LIME explainer
         lime_explainer = lime_image.LimeImageExplainer()
