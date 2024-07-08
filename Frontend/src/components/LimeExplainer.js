@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const ImageWithMask = ({ imageUrl, maskData }) => {
-  const svgRef = useRef(null);
+const LimeExplainer = ({ imageUrl, maskData, containerSize }) => {
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const loadImageAndMask = async () => {
@@ -15,9 +15,7 @@ const ImageWithMask = ({ imageUrl, maskData }) => {
 
       // Get image dimensions
       const { width: originalImgWidth, height: originalImgHeight } = image;
-      // Set the size of the SVG container
-      const containerSize = 500;
-
+    
       // Calculate the scaling factors to maintain aspect ratio
       const imageAspectRatio = originalImgWidth / originalImgHeight;
       let scaledImgWidth, scaledImgHeight;
@@ -35,11 +33,11 @@ const ImageWithMask = ({ imageUrl, maskData }) => {
       const offsetY = (containerSize - scaledImgHeight) / 2;
 
       // Clear any previous content
-      d3.select(svgRef.current).selectAll("*").remove();
+      d3.select(containerRef.current).selectAll("*").remove();
 
       // Create an SVG container
       const svg = d3
-        .select(svgRef.current)
+        .select(containerRef.current)
         .attr("width", containerSize)
         .attr("height", containerSize);
 
@@ -57,10 +55,10 @@ const ImageWithMask = ({ imageUrl, maskData }) => {
       const maskScaleY = scaledImgHeight / maskData.length;
 
 
-        console.log("offsetX: " + offsetX);
-        console.log("offsetY: " + offsetY);
-        console.log("maskScaleX: " + maskScaleX);
-        console.log("maskScaleY: " + maskScaleY);
+        // console.log("offsetX: " + offsetX);
+        // console.log("offsetY: " + offsetY);
+        // console.log("maskScaleX: " + maskScaleX);
+        // console.log("maskScaleY: " + maskScaleY);
 
       // Add the mask to the SVG
 
@@ -83,7 +81,7 @@ const ImageWithMask = ({ imageUrl, maskData }) => {
     loadImageAndMask();
   }, [imageUrl, maskData]);
 
-  return <svg ref={svgRef}></svg>;
+  return <svg ref={containerRef}></svg>;
 };
 
-export default ImageWithMask;
+export default LimeExplainer;

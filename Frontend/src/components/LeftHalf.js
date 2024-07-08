@@ -8,10 +8,7 @@ import Canvas from "./Canvas.js";
 const LeftHalf = ({fetchData}) => {
 
 
-    const [image, setImage] = useState(null);
-    const [data, setData] = useState(null);
-    const [heatmapState, setHeatmapState] = useState(false);
-    
+    const [image, setImage] = useState(null);    
 
     const uploadImage = (event) => {
         const file = event.target.files[0];
