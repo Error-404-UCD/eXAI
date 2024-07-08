@@ -24,13 +24,10 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
       const imageAspectRatio = originalImgWidth / originalImgHeight;
       let scaledImgWidth, scaledImgHeight;
 
-      if (imageAspectRatio > 1) {
+      
         scaledImgWidth = containerSize;
         scaledImgHeight = containerSize / imageAspectRatio;
-      } else {
-        scaledImgWidth = containerSize * imageAspectRatio;
-        scaledImgHeight = containerSize;
-      }
+     
 
       const shapWidth = shapValues.length;
       const shapHeight = shapValues[0].length;
