@@ -168,9 +168,10 @@ class Explainer:
                 validation_steps=validation_steps,
                 epochs=10
             )
-            self.model.save_weights(self.checkpoint_path)
+            # self.model.save_weights(self.checkpoint_path)
+            # self.model.save(self.checkpoint_path)
         else:
-            self.model.load_weights(self.checkpoint_path)
+            self.model = tf.keras.models.load_model(self.checkpoint_path)
 
     # Function to get predictions
     def predict(self, imgs):
@@ -182,7 +183,7 @@ class Explainer:
         return self.class_names[predicted_class]
     
     def explain_lime_random(self):
-        self.build_train_model()
+        # self.build_train_model()
 
         random_index = random.randint(0, len(self.val_paths) - 1)
         img_path = self.val_paths[random_index]
@@ -220,14 +221,14 @@ class Explainer:
         return df_weights
     
     def explain_shap_random(self):
-        self.build_train_model()   
+        # self.build_train_model()   
         random_index = random.randint(0, len(self.val_paths) - 1)
         img_path = self.val_paths[random_index]
         test_image = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
         return self.get_shap_explanation(test_image)
     
     def get_shap_explanation(self, test_image):
-        self.build_train_model()
+        # self.build_train_model()
         images = []
         for i in range(103):
             images.append(Imager.load_image(self.val_paths[i], (self.target_img_width, self.target_img_height)))
@@ -238,7 +239,7 @@ class Explainer:
         return shap_values
 
     def get_lime_explanations(self, test_image):
-        self.build_train_model()
+        # self.build_train_model()
          # Create a LIME explainer
         lime_explainer = lime_image.LimeImageExplainer()
         # Generate LIME explanation

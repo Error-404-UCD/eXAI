@@ -36,7 +36,7 @@ const Canvas = (data) => {
 			context.clearRect(0, 0, width, height);
 
 			// Draw the image
-
+			context.imageSmoothingEnabled = false;
 			context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
 
 			

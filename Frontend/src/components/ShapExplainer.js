@@ -5,7 +5,7 @@ import * as d3 from "d3";
 const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
   const containerRef = useRef(null);
 
-  console.log(shapValues);
+//   console.log(shapValues);
 
   useEffect(() => {
     if (shapValues == null) return;
@@ -50,6 +50,7 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
         // Draw the image as grayscale
         ctx.filter = "grayscale(100%)";
         ctx.globalAlpha = 0.5;
+        ctx.imageSmoothingEnabled = false;
 
         ctx.drawImage(image, 0, 0, scaledImgWidth, scaledImgHeight);
 

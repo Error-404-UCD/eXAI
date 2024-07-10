@@ -15,7 +15,7 @@ const LimeExplainer = ({ imageUrl, maskData, containerSize }) => {
 
       // Get image dimensions
       const { width: originalImgWidth, height: originalImgHeight } = image;
-    
+
       // Calculate the scaling factors to maintain aspect ratio
       const imageAspectRatio = originalImgWidth / originalImgHeight;
       let scaledImgWidth, scaledImgHeight;
@@ -39,41 +39,43 @@ const LimeExplainer = ({ imageUrl, maskData, containerSize }) => {
       const svg = d3
         .select(containerRef.current)
         .attr("width", containerSize)
-        .attr("height", containerSize);
+        .attr("height", containerSize)
+        .style("shape-rendering", "crispEdges")
+        .style("image-rendering", "pixelated");
 
       // Add the image to the SVG
-      svg
-        .append("image")
-        .attr("xlink:href", imageUrl)
-        .attr("width", scaledImgWidth)
-        .attr("height", scaledImgHeight)
-        .attr("x", offsetX)
-        .attr("y", offsetY);
+      // svg
+      //   .append("image")
+      //   .attr("xlink:href", imageUrl)
+      //   .attr("width", scaledImgWidth)
+      //   .attr("height", scaledImgHeight)
+      //   .attr("x", offsetX)
+      //   .attr("y", offsetY)
+      //   .style("image-rendering", "pixelated"); // Ensure the image rendering is also set
 
       // Scale the mask data to match the scaled image dimensions
       const maskScaleX = scaledImgWidth / maskData[0].length;
       const maskScaleY = scaledImgHeight / maskData.length;
 
-
-        // console.log("offsetX: " + offsetX);
-        // console.log("offsetY: " + offsetY);
-        // console.log("maskScaleX: " + maskScaleX);
-        // console.log("maskScaleY: " + maskScaleY);
+      // console.log("offsetX: " + offsetX);
+      // console.log("offsetY: " + offsetY);
+      // console.log("maskScaleX: " + maskScaleX);
+      // console.log("maskScaleY: " + maskScaleY);
 
       // Add the mask to the SVG
 
-      for(var j = 0; j < maskData[0].length; ++j) {
-        for(var i = 0; i < maskData.length; ++i) {
-            let value = maskData[i][j];
-            if (value === 1) {
-              svg
-                .append("rect")
-                .attr("x", offsetX + i * maskScaleX)
-                .attr("y", offsetY + j * maskScaleY)
-                .attr("width", maskScaleX)
-                .attr("height", maskScaleY)
-                .attr("fill", "rgba(255, 0, 0, 0.5)");
-            }
+      for (var j = 0; j < maskData[0].length; ++j) {
+        for (var i = 0; i < maskData.length; ++i) {
+          let value = maskData[j][i];
+          if (value === 1) {
+            svg
+              .append("rect")
+              .attr("x", offsetX + i * maskScaleX)
+              .attr("y", offsetY + j * maskScaleY)
+              .attr("width", maskScaleX)
+              .attr("height", maskScaleY)
+              .attr("fill", "rgba(255, 0, 0, 0.5)");
+          }
         }
       }
     };

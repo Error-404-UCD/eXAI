@@ -68,7 +68,7 @@ if __name__ == "__main__":
             target_img_height=target_img_height,
             batch_size=batch_size
         )
-    
+    explainer.build_train_model()
     # explainer.explain_lime_random()
     # explainer.explain_shap_random()
 

@@ -15,7 +15,7 @@ const RightHalf = ({imageUrl, data}) => {
     };
 
     if(data != null) {
-        // console.log(data.data.shaparray); 
+        console.log(data); 
     }
 
 
