@@ -90,14 +90,14 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
               total += shapValues[y][x][px][classIndex];
             }
 
-            // // console.log(total);
-            // if (total < 0) {
-            //   ctx.fillStyle = "red";
-            // } else {
-            //   ctx.fillStyle = "blue";
-            // }
+            // console.log(total);
+            if (total < 0) {
+              ctx.fillStyle = "white";
+            } else {
+              ctx.fillStyle = "blue";
+            }
 
-            ctx.fillStyle = colorScale(total);
+            // ctx.fillStyle = colorScale(total);
             ctx.fillRect(x * scaleX, y * scaleY, 2, 2);
             
           
