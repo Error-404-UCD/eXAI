@@ -30,7 +30,10 @@ const LeftHalf = ({fetchData}) => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(event) => {fetchData(event); uploadImage(event);}}
+                onChange={(event) => {
+                  fetchData(event);
+                  uploadImage(event);
+                }}
                 id="file-upload"
                 hidden
               />
@@ -72,15 +75,13 @@ const LeftHalf = ({fetchData}) => {
           <div className="flex flex-row mr-4 text-lg py-5">
             <div className="">DATASET</div>
             <div className="px-5">
-              <select onChange={console.log("Dataset changed")}>
+              <select onChange={console.log("Dataset changed")} defaultValue={"MNIST"}>
+                <option value="MNIST">MNIST</option>
                 <option value="Astro">Astronomy</option>
                 <option value="BM">Bone Marrow</option>
               </select>
             </div>
           </div>
-
-          
-          
         </div>
       </div>
     );

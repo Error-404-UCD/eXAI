@@ -5,7 +5,7 @@ import * as d3 from "d3";
 const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
   const containerRef = useRef(null);
 
-  
+  console.log(shapValues);
 
   useEffect(() => {
     if (shapValues == null) return;
@@ -31,7 +31,7 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
 
       const shapWidth = shapValues.length;
       const shapHeight = shapValues[0].length;
-      const classes = shapValues[0][0].length;
+      const classes = shapValues[0][0][0].length;
 
       console.log("scaledImgWidth: " + scaledImgWidth);
       console.log("scaledImgHeight: " + scaledImgHeight);

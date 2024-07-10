@@ -33,13 +33,13 @@ class Explainer:
         # checkpoint_path = "../models/checkpoints/astro.weights.h5"
         self.checkpoint_path = checkpoint_path
         self.checkpoint_dir = os.path.dirname(checkpoint_path)
-        if not os.path.exists( self.checkpoint_dir):
+        print("Checkpoint dir: " + self.checkpoint_dir)
+        if not os.path.exists(self.checkpoint_dir):
             os.mkdir(self.checkpoint_dir) 
 
         # Parameters
-        self.target_img_height = (target_img_height)
-        self.target_img_width = (target_img_width)
         self.batch_size = (batch_size)
+
 
         # Prepare lists to hold file paths and labels
         self.file_paths = []
@@ -47,16 +47,17 @@ class Explainer:
         self.class_names = set()
         self.class_counts = {}
 
-        for filename in os.listdir(self.image_folder):
-            if filename.endswith(('jpg', 'png', 'jpeg')):  # Ensure only image files are processed
-                class_name = filename.split('_')[0]
-                self.class_names.add(class_name)
-                if class_name not in self.class_counts:
-                    self.class_counts[class_name] = 0
-                self.class_counts[class_name] += 1
+        for dirpath, dirnames, filenames in os.walk(self.image_folder):
+            for filename in filenames:
+                if filename.endswith(('jpg', 'png', 'jpeg')):  # Ensure only image files are processed
+                    class_name = filename.split('_')[0]
+                    self.class_names.add(class_name)
+                    if class_name not in self.class_counts:
+                        self.class_counts[class_name] = 0
+                    self.class_counts[class_name] += 1
 
-                self.file_paths.append(os.path.join(image_folder, filename))
-                self.labels.append(class_name)
+                    self.file_paths.append(os.path.join(dirpath, filename))
+                    self.labels.append(class_name)
 
         self.class_names = list(self.class_names)           
 
@@ -65,6 +66,8 @@ class Explainer:
                     idx for idx, class_name in enumerate(self.class_names) }
         print(label_map)
         self.labels = [label_map[label] for label in self.labels]
+
+        self.checkset_target_size(self.file_paths[0], target_img_width, target_img_height)
 
 
         # Split the data into training and validation sets
@@ -83,7 +86,17 @@ class Explainer:
     # Function to resize images
    
 
-   
+    def checkset_target_size(self, img_path, target_img_width, target_img_height):
+        size = Imager.get_image_size(img_path)
+        if target_img_width == -1:
+            self.target_img_width = size[0]
+        else:
+            self.target_img_width = target_img_width
+        if target_img_height == -1:
+            self.target_img_height = size[1]
+        else:
+            self.target_img_height = target_img_height
+
 
     # Custom data generator
     def data_generator(self, file_paths, labels, batch_size, img_height, img_width):
@@ -126,7 +139,7 @@ class Explainer:
             Conv2D(32, (3, 3), activation='relu', input_shape=(
                 self.target_img_height, 
                 self.target_img_width, 
-                3)), # 3 for RGB, 2 for Greyscale
+                3)), # 3 for RGB, 1 for Greyscale
             MaxPooling2D((2, 2)),
             Conv2D(64, (3, 3), activation='relu'),
             MaxPooling2D((2, 2)),
@@ -176,7 +189,12 @@ class Explainer:
         true_label = self.val_labels[random_index]
 
         # Load and preprocess the image
-        img = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
+        img = ""
+        if not self.is_grey:
+            img = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
+        else: 
+            img = Imager.load_greyscale_image_to_rgb(img_path, (self.target_img_width, self.target_img_height))
+
         print(f"img0: {img.shape}")
         # Predict the class of the image
        
@@ -224,7 +242,7 @@ class Explainer:
          # Create a LIME explainer
         lime_explainer = lime_image.LimeImageExplainer()
         # Generate LIME explanation
-        lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
+        lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict, hide_color=0, num_samples=1000)
         # print(f"Lime: {lime_explanation}")
         # Display the explanation
         temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)

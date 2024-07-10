@@ -24,13 +24,42 @@ if __name__ == "__main__":
     config_file_path = os.path.join(script_dir, "config.ini")
     config.read(config_file_path)
     config.read(config_file_path)
-    # print(list(config.keys()))
-    img_folder          = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
-    checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
+    print(list(config.keys()))
+
+    astro_img_folder          = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
+    astro_checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
                             config["MLMODEL"]["AstronomyModelCheckpointName"])
+    mnist_img_folder          = script_dir + "/" + str(config["MLMODEL"]["MNISTImagesPath"])
+    print(f"mnist_img_folder: {mnist_img_folder}")
+    mnist_checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
+                            config["MLMODEL"]["MNISTModelCheckpointName"])
+    print(f"mnist_checkpoint_path: {mnist_checkpoint_path}")
+
     target_img_width    = int(config["MLMODEL"]["TargetImageWidth"])
     target_img_height   = int(config["MLMODEL"]["TargetImageHeight"])
     batch_size          = int(config["MLMODEL"]["BatchSize"])
+    change_target_dim   = int(config["MLMODEL"]["ChangeImageTargetDim"])
+    default_dataset     = str(config["MLMODEL"]["DefaultDatasetSelection"])
+
+    # if change target dim == 0 then set target_img_width, target_img_height = -1
+    if change_target_dim == 0:
+        target_img_width = -1
+        target_img_height = -1
+
+    # change dataset as per selection
+    img_folder = ""
+    checkpoint_path = ""
+
+    if default_dataset == "MNIST":
+        img_folder = mnist_img_folder
+        checkpoint_path = mnist_checkpoint_path
+    elif default_dataset == "ASTRO":
+        img_folder = astro_img_folder
+        checkpoint_path = astro_checkpoint_path
+
+    print(f"Dataset: {default_dataset}")
+    print(f"img_folder: {img_folder}")
+    print(f"checkpoint_path: {checkpoint_path}")
 
     explainer = Explainer(
             image_folder=img_folder,
