@@ -103,3 +103,9 @@ Refer Google Coding Style guide to push into repository
 - Python (https://google.github.io/styleguide/pyguide.html)
 
 - Javascript (https://google.github.io/styleguide/jsguide.html)
+
+-----
+Dataset sources
+- Kaggle Astronomy (https://www.kaggle.com/datasets/subhamshome/esa-hubble-images-3-classes?resource=download)
+- Kaggle Bone Marrow (https://www.kaggle.com/datasets/andrewmvd/bone-marrow-cell-classification)
+- Kaggle MNIST (https://www.kaggle.com/datasets/scolianni/mnistasjpg)
