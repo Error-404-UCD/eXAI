@@ -89,7 +89,7 @@ npm install
 npm start
 ```
 -----
-<h2> Download the datasets from here<h2>
+<h2> Download the datasets from here</h2>
 
 - [MNIST](https://drive.google.com/file/d/1MwIyLK1h0iEi3Lfi9piRR7LNQf6gXXYT/view?usp=drive_link)
 
