@@ -96,9 +96,10 @@ if __name__ == "__main__":
             shapval = explainer.get_shap_explanation(image, gradient=gradient)
             limeval = explainer.get_lime_explanations(image)
             prediction = explainer.get_prediction(image)
+            classes = explainer.get_classes()
             # print(limeval)
             # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
-            numpyData = {"shaparray": shapval, "limearray": limeval, "prediction": prediction}
+            numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction, "classes": classes }
             
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
     
@@ -115,8 +116,9 @@ if __name__ == "__main__":
                 target_img_height))
             val = explainer.get_lime_explanations(image)
             prediction = explainer.get_prediction(image)
+            classes = explainer.get_classes()
             # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
-            numpyData = {"limearray": val, "prediction": prediction}
+            numpyData = { "limearray": val, "prediction": prediction, "classes": classes }
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
 
     

@@ -177,6 +177,9 @@ class Explainer:
     def predict(self, imgs):
         return self.model.predict(imgs)
     
+    def get_classes(self):
+        return self.class_names
+    
     def get_prediction(self, img):
         predictions = self.model.predict(img)
         predicted_class = np.argmax(predictions[0])
@@ -239,7 +242,7 @@ class Explainer:
         else:
             e = shap.GradientExplainer(self.model, test_image)
         shap_values = e.shap_values(test_image)
-        print(f"Shap values:\n{shap_values}")
+        # print(f"Shap values:\n{shap_values}")
         return shap_values
 
     def get_lime_explanations(self, test_image):
