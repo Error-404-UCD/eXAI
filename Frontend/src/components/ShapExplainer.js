@@ -80,8 +80,8 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
 
         // Create a color scale
         const colorScale = d3
-          .scaleSequential(d3.interpolateRdBu)
-          .domain([d3.min(shapValues.flat(4)), d3.max(shapValues.flat(3))]);
+          .scaleSequential(d3.interpolatePRGn)
+          .domain([d3.min(shapValues.flat(4)), d3.max(shapValues.flat(4))]);
         // console.log(shapValues);
         // Draw the SHAP values overlay
         for (let y = 0; y < shapHeight; y++) {
@@ -92,14 +92,14 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
             }
 
             // console.log(total);
-            if (total < 0) {
-              ctx.fillStyle = "white";
-            } else {
-              ctx.fillStyle = "blue";
-            }
+            // if (total < 0) {
+            //   ctx.fillStyle = "white";
+            // } else {
+            //   ctx.fillStyle = "blue";
+            // }
 
-            // ctx.fillStyle = colorScale(total);
-            ctx.fillRect(x * scaleX, y * scaleY, 2, 2);
+            ctx.fillStyle = colorScale(total);
+            ctx.fillRect(x * scaleX, y * scaleY, scaleX - 1, scaleY - 1);
             
           
         

@@ -77,8 +77,8 @@ if __name__ == "__main__":
     CORS(app)
 
     # https://rapidapi.com/guides/upload-files-react-axios
-    @app.route('/limeshapexplain', methods=['GET', 'POST'])
-    def limeshap_explain():
+    @app.route('/limeshapexplain/<gradient>', methods=['GET', 'POST'])
+    def limeshap_explain(gradient):
         print(f"Req: {len(request.files)}")
         if request.method == 'POST':
             f = request.files['file']
@@ -86,7 +86,14 @@ if __name__ == "__main__":
             image = Imager.load_image(f, 
                 (target_img_width,
                 target_img_height))
-            shapval = explainer.get_shap_explanation(image)
+            
+            if gradient == "True":
+                gradient = True
+            else:
+                gradient = False
+                
+            print(f"Gradient: {gradient}")
+            shapval = explainer.get_shap_explanation(image, gradient=gradient)
             limeval = explainer.get_lime_explanations(image)
             prediction = explainer.get_prediction(image)
             # print(limeval)

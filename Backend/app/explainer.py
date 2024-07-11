@@ -59,7 +59,7 @@ class Explainer:
                     self.file_paths.append(os.path.join(dirpath, filename))
                     self.labels.append(class_name)
 
-        self.class_names = list(self.class_names)           
+        self.class_names = list(sorted(self.class_names))      
 
 
         label_map = { class_name: 
@@ -227,15 +227,19 @@ class Explainer:
         test_image = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
         return self.get_shap_explanation(test_image)
     
-    def get_shap_explanation(self, test_image):
+    def get_shap_explanation(self, test_image, gradient=False):
         # self.build_train_model()
         images = []
-        for i in range(103):
+        for i in range(len(self.val_paths)):
             images.append(Imager.load_image(self.val_paths[i], (self.target_img_width, self.target_img_height)))
         background = images[:100]
-        e = shap.DeepExplainer(self.model, background)
+        e = 0
+        if not gradient:
+            e = shap.DeepExplainer(self.model, background)
+        else:
+            e = shap.GradientExplainer(self.model, test_image)
         shap_values = e.shap_values(test_image)
-        print(f"Shap values: {shap_values.shape}")
+        print(f"Shap values:\n{shap_values}")
         return shap_values
 
     def get_lime_explanations(self, test_image):

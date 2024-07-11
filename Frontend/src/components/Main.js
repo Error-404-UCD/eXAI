@@ -8,7 +8,7 @@ const Main = () => {
 
     const [data, setData] = useState(null);
     const [imgUrl, setImgUrl] = useState(null);
-    const uploadLink = "http://127.0.0.1:5000/limeshapexplain";
+    const uploadLink = "http://127.0.0.1:5000/limeshapexplain/False";
 
     const fetchData = async () => {
       try {
