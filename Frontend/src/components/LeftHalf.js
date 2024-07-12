@@ -8,10 +8,14 @@ import Canvas from "./Canvas.js";
 const LeftHalf = ({fetchData}) => {
 
 
-    const [image, setImage] = useState(null);    
+    const [image, setImage] = useState(null); 
+    const [imageFile, setImageFile] = useState(null);   
+    const [selectedModel, setSelectedModel] = useState("M1");
 
     const uploadImage = (event) => {
+        if (event.target.files == 0) return;
         const file = event.target.files[0];
+        setImageFile(file);
         setImage(URL.createObjectURL(file));
     }
     
@@ -19,6 +23,19 @@ const LeftHalf = ({fetchData}) => {
     const handlePredict = () => {
     //   setPrediction("Error404"); // Placeholder for actual prediction logic
     };
+
+    const handleModelChange = (event) => {
+      setSelectedModel(event.target.value);
+    }
+
+    const handleImageChange = (event) => {
+      uploadImage(event);
+    }
+
+    const handleDataFetch = () => {
+      console.log(imageFile);
+      fetchData(imageFile, selectedModel);
+    }
 
 
     return (
@@ -30,10 +47,7 @@ const LeftHalf = ({fetchData}) => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(event) => {
-                  fetchData(event);
-                  uploadImage(event);
-                }}
+                onChange={handleImageChange}
                 id="file-upload"
                 hidden
               />
@@ -45,15 +59,21 @@ const LeftHalf = ({fetchData}) => {
               </label>
             </div>
 
-            {/* <div className="predict-section">
-              <input type="button" accept="image/*" id="predict-class" hidden />
+            <div className="predict-section">
+              <input
+                type="button"
+                accept="image/*"
+                onClick={handleDataFetch}
+                id="predict-class"
+                hidden
+              />
               <label
                 htmlFor="predict-class"
                 className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
               >
                 PREDICT CLASS
               </label>
-            </div> */}
+            </div>
           </div>
 
           <div className="mt-8 shadow-xl rounded-md px-5 py-5 bg-white">
@@ -73,14 +93,22 @@ const LeftHalf = ({fetchData}) => {
           </div>
 
           <div className="flex flex-row mr-4 text-lg py-5">
-            <div className="">DATASET</div>
-            <div className="px-5">
-              <select onChange={console.log("Dataset changed")} defaultValue={"MNIST"}>
-                <option value="MNIST">MNIST</option>
-                <option value="Astro">Astronomy</option>
-                <option value="BM">Bone Marrow</option>
-              </select>
-            </div>
+            <div className="px-5">DATASET</div>
+            <select
+              onChange={console.log("Dataset changed")}
+              defaultValue={"MNIST"}
+            >
+              <option value="MNIST">MNIST</option>
+              <option value="Astro">Astronomy</option>
+              <option value="BM">Bone Marrow</option>
+            </select>
+          </div>
+          <div className="flex flex-row mr-4 text-lg">
+            <div className="px-5">ML Model</div>
+            <select defaultValue={"M1"} onChange={handleModelChange}>
+              <option value="M1">Super_CNN</option>
+              <option value="M2">Tiny_CNN</option>
+            </select>
           </div>
         </div>
       </div>

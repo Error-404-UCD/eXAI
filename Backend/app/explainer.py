@@ -131,10 +131,32 @@ class Explainer:
             self.target_img_width)
 
 
+    def build_weak_model(self):
+        self.weak_model = Sequential([
+            Conv2D(32, (3, 3), activation='relu', input_shape=(
+                self.target_img_height, 
+                self.target_img_width, 
+                3)), # 3 for RGB, 1 for Greyscale
+            MaxPooling2D((2, 2)),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D((2, 2)),
+            Conv2D(128, (3, 3), activation='relu'),
+            MaxPooling2D((2, 2)),
+            Flatten(),
+            Dense(512, activation='relu'),
+            Dense(len(self.class_names), activation='softmax')
+        ])
+
+        self.weak_model.compile(
+            optimizer='adam', 
+            loss='sparse_categorical_crossentropy', 
+            metrics=['accuracy'])
 
     # Build the CNN model
     def build_train_model(self):
         self.create_generators()
+        self.build_weak_model()
+
         self.model = Sequential([
             Conv2D(32, (3, 3), activation='relu', input_shape=(
                 self.target_img_height, 
@@ -174,14 +196,22 @@ class Explainer:
             self.model = tf.keras.models.load_model(self.checkpoint_path)
 
     # Function to get predictions
-    def predict(self, imgs):
-        return self.model.predict(imgs)
+    def predict_trained(self, imgs):      
+            return self.model.predict(imgs)
+    
+    def predict_untrained(self, imgs):
+        return self.weak_model.predict(imgs)
+
     
     def get_classes(self):
         return self.class_names
     
-    def get_prediction(self, img):
-        predictions = self.model.predict(img)
+    def get_prediction(self, img, trained=True):
+        predictions = ""
+        if trained:
+            predictions = self.predict_trained(img)
+        else:
+            predictions = self.predict_untrained(img)
         predicted_class = np.argmax(predictions[0])
         return self.class_names[predicted_class]
     
@@ -199,29 +229,7 @@ class Explainer:
         else: 
             img = Imager.load_greyscale_image_to_rgb(img_path, (self.target_img_width, self.target_img_height))
 
-        print(f"img0: {img.shape}")
-        # Predict the class of the image
-       
-
-        # Create a LIME explainer
-        lime_explainer = lime_image.LimeImageExplainer()
-
-
-        # Generate LIME explanation
-        lime_explanation = lime_explainer.explain_instance(img[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
-
-        # Display the explanation
-        temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
-
-        # Get the weights for the top label
-        weights = lime_explanation.local_exp[lime_explanation.top_labels[0]]
-        weights = sorted(weights, key=lambda x: x[1], reverse=True)
-
-        # Convert weights to a DataFrame
-        df_weights = pd.DataFrame(weights, columns=['Superpixel', 'Weight'])
-
-        # print(df_weights)
-        return df_weights
+        return self.get_lime_explanations(img)
     
     def explain_shap_random(self):
         # self.build_train_model()   
@@ -230,27 +238,37 @@ class Explainer:
         test_image = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
         return self.get_shap_explanation(test_image)
     
-    def get_shap_explanation(self, test_image, gradient=False):
+    def get_shap_explanation(self, test_image, gradient=False, trained=True):
         # self.build_train_model()
         images = []
         for i in range(len(self.val_paths)):
             images.append(Imager.load_image(self.val_paths[i], (self.target_img_width, self.target_img_height)))
         background = images[:100]
         e = 0
+
+        blackbox = self.model
+        if not trained:
+            blackbox = self.weak_model
+
         if not gradient:
-            e = shap.DeepExplainer(self.model, background)
+            e = shap.DeepExplainer(blackbox, background)
         else:
-            e = shap.GradientExplainer(self.model, test_image)
+            e = shap.GradientExplainer(blackbox, test_image)
         shap_values = e.shap_values(test_image)
         # print(f"Shap values:\n{shap_values}")
         return shap_values
 
-    def get_lime_explanations(self, test_image):
+    def get_lime_explanations(self, test_image, trained=True):
         # self.build_train_model()
          # Create a LIME explainer
         lime_explainer = lime_image.LimeImageExplainer()
         # Generate LIME explanation
-        lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict, hide_color=0, num_samples=1000)
+        lime_explanation = ""
+        if trained:
+            lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict_trained, hide_color=0, num_samples=1000)
+        else:
+            lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict_untrained, hide_color=0, num_samples=1000)
+
         # print(f"Lime: {lime_explanation}")
         # Display the explanation
         temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
