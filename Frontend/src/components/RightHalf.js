@@ -49,6 +49,7 @@ const RightHalf = ({imageUrl, data}) => {
                   imageUrl={imageUrl}
                   shapValues={data.data.shaparray[0]}
                   containerSize={500}
+                  classNames={data.data.classes}
                 />
               ) : (
                 <Canvas

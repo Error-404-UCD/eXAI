@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 
-const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
+const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
   const containerRef = useRef(null);
-
-//   console.log(shapValues);
+  const [activeClass, setActiveClass] = useState(classNames[0]); // Initial class name
 
   useEffect(() => {
     if (shapValues == null) return;
@@ -24,10 +23,8 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
       const imageAspectRatio = originalImgWidth / originalImgHeight;
       let scaledImgWidth, scaledImgHeight;
 
-      
-        scaledImgWidth = containerSize;
-        scaledImgHeight = containerSize / imageAspectRatio;
-     
+      scaledImgWidth = containerSize;
+      scaledImgHeight = containerSize / imageAspectRatio;
 
       const shapWidth = shapValues.length;
       const shapHeight = shapValues[0].length;
@@ -55,7 +52,12 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
         ctx.drawImage(image, 0, 0, scaledImgWidth, scaledImgHeight);
 
         // Get the image data
-        const imageData = ctx.getImageData(0, 0, scaledImgWidth, scaledImgHeight);
+        const imageData = ctx.getImageData(
+          0,
+          0,
+          scaledImgWidth,
+          scaledImgHeight
+        );
         const data = imageData.data;
 
         // Convert to grayscale and invert the colors
@@ -100,9 +102,6 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
 
             ctx.fillStyle = colorScale(total);
             ctx.fillRect(x * scaleX, y * scaleY, scaleX - 1, scaleY - 1);
-            
-          
-        
           }
         }
 
@@ -126,12 +125,49 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize }) => {
           .style("height", scaledImgHeight + "px")
           .style("margin-bottom", "15px");
       }
+
+      // Add scroll event listener
+      containerRef.current.addEventListener("scroll", handleScroll);
+
+      return () => {
+        containerRef.current.removeEventListener("scroll", handleScroll);
+      };
+    };
+
+    const handleScroll = () => {
+        const container = containerRef.current;
+        const images = container.querySelectorAll("img");
+        
+        const containerScrollTop = container.scrollTop;
+
+
+        images.forEach((img, index) => {
+        const imgTop = img.offsetTop;
+        const imgHeight = img.clientHeight;
+        const halfImgHeight = imgHeight / 2;
+
+        if (containerScrollTop >= imgTop - halfImgHeight && containerScrollTop < imgTop + halfImgHeight) {
+            const name = classNames[index];
+            if (name != null) {
+                setActiveClass(name);
+                console.log(classNames[index]);
+            }
+            
+        }
+        });
     };
 
     loadImageAndCreateOverlays();
-  }, [imageUrl, shapValues, containerSize]);
+  }, [imageUrl, shapValues, containerSize, classNames]);
 
-  return <div className="w-[500px] h-[500px] overflow-y-scroll" ref={containerRef}></div>;
+  return (
+    <div className="relative w-[500px] h-[500px]">
+      <div className="absolute top-0 left-0 p-2 bg-transparent text-black text-lg text-center z-10">
+        Class: {activeClass}
+      </div>
+      <div className="w-full h-full overflow-y-scroll" ref={containerRef}></div>
+    </div>
+  );
 };
 
 export default ShapExplainer;
