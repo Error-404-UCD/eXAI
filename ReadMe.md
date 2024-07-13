@@ -37,7 +37,7 @@ pip install -r requirements.txt
 - In models directory create another folder checkpoints
 - Download and extract the datasets in the data folder such that the path would be example, data/Astronomy/galaxies_heic0007b.jpg
 - Make sure that the datasets contain images that store classname_ in it's file name
-- Start the server in the Backend folder
+- Start the server in the Backend folder so that the paths are correctly received in the main file
 
 ```
 python app/server_launch.py
@@ -88,9 +88,24 @@ npm install
 ```
 npm start
 ```
+-----
+<h2> Download the datasets from here</h2>
 
+- [MNIST](https://drive.google.com/file/d/1MwIyLK1h0iEi3Lfi9piRR7LNQf6gXXYT/view?usp=drive_link)
+
+- [BONE MARROW](https://drive.google.com/file/d/1gwtnhsOOcuwlChL1HTofrDN69uHPreIJ/view?usp=drive_link)
+
+- [ASTRONOMY](https://drive.google.com/file/d/14ueW-7m3HkjVIR1O2RjX3TPr_4ZS8Vh1/view?usp=drive_link)
 
 -----
-Refer Google Coding Style guide
+Refer Google Coding Style guide to push into repository
+
 - Python (https://google.github.io/styleguide/pyguide.html)
+
 - Javascript (https://google.github.io/styleguide/jsguide.html)
+
+-----
+Dataset sources
+- Kaggle Astronomy (https://www.kaggle.com/datasets/subhamshome/esa-hubble-images-3-classes?resource=download)
+- Kaggle Bone Marrow (https://www.kaggle.com/datasets/andrewmvd/bone-marrow-cell-classification)
+- Kaggle MNIST (https://www.kaggle.com/datasets/scolianni/mnistasjpg)

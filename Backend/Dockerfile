@@ -33,6 +33,10 @@ RUN gdown --fuzzy "https://drive.google.com/file/d/14ueW-7m3HkjVIR1O2RjX3TPr_4ZS
 RUN unzip data/Astronomy.zip -d data/Astronomy
 RUN rm data/Astronomy.zip
 
+RUN gdown --fuzzy "https://drive.google.com/file/d/1MwIyLK1h0iEi3Lfi9piRR7LNQf6gXXYT/view?usp=drive_link" -O data/ 
+RUN unzip data/MNIST.zip -d data/MNIST
+RUN rm data/MNIST.zip
+
 # final configuration
 
 EXPOSE 5000

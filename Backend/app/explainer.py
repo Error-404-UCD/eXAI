@@ -33,11 +33,13 @@ class Explainer:
         # checkpoint_path = "../models/checkpoints/astro.weights.h5"
         self.checkpoint_path = checkpoint_path
         self.checkpoint_dir = os.path.dirname(checkpoint_path)
+        print("Checkpoint dir: " + self.checkpoint_dir)
+        if not os.path.exists(self.checkpoint_dir):
+            os.mkdir(self.checkpoint_dir) 
 
         # Parameters
-        self.target_img_height = (target_img_height)
-        self.target_img_width = (target_img_width)
         self.batch_size = (batch_size)
+
 
         # Prepare lists to hold file paths and labels
         self.file_paths = []
@@ -45,24 +47,27 @@ class Explainer:
         self.class_names = set()
         self.class_counts = {}
 
-        for filename in os.listdir(self.image_folder):
-            if filename.endswith(('jpg', 'png', 'jpeg')):  # Ensure only image files are processed
-                class_name = filename.split('_')[0]
-                self.class_names.add(class_name)
-                if class_name not in self.class_counts:
-                    self.class_counts[class_name] = 0
-                self.class_counts[class_name] += 1
+        for dirpath, dirnames, filenames in os.walk(self.image_folder):
+            for filename in filenames:
+                if filename.endswith(('jpg', 'png', 'jpeg')):  # Ensure only image files are processed
+                    class_name = filename.split('_')[0]
+                    self.class_names.add(class_name)
+                    if class_name not in self.class_counts:
+                        self.class_counts[class_name] = 0
+                    self.class_counts[class_name] += 1
 
-                self.file_paths.append(os.path.join(image_folder, filename))
-                self.labels.append(class_name)
+                    self.file_paths.append(os.path.join(dirpath, filename))
+                    self.labels.append(class_name)
 
-        self.class_names = list(self.class_names)           
+        self.class_names = list(sorted(self.class_names))      
 
 
         label_map = { class_name: 
                     idx for idx, class_name in enumerate(self.class_names) }
         print(label_map)
         self.labels = [label_map[label] for label in self.labels]
+
+        self.checkset_target_size(self.file_paths[0], target_img_width, target_img_height)
 
 
         # Split the data into training and validation sets
@@ -81,7 +86,17 @@ class Explainer:
     # Function to resize images
    
 
-   
+    def checkset_target_size(self, img_path, target_img_width, target_img_height):
+        size = Imager.get_image_size(img_path)
+        if target_img_width == -1:
+            self.target_img_width = size[0]
+        else:
+            self.target_img_width = target_img_width
+        if target_img_height == -1:
+            self.target_img_height = size[1]
+        else:
+            self.target_img_height = target_img_height
+
 
     # Custom data generator
     def data_generator(self, file_paths, labels, batch_size, img_height, img_width):
@@ -116,15 +131,37 @@ class Explainer:
             self.target_img_width)
 
 
+    def build_weak_model(self):
+        self.weak_model = Sequential([
+            Conv2D(32, (3, 3), activation='relu', input_shape=(
+                self.target_img_height, 
+                self.target_img_width, 
+                3)), # 3 for RGB, 1 for Greyscale
+            MaxPooling2D((2, 2)),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D((2, 2)),
+            Conv2D(128, (3, 3), activation='relu'),
+            MaxPooling2D((2, 2)),
+            Flatten(),
+            Dense(512, activation='relu'),
+            Dense(len(self.class_names), activation='softmax')
+        ])
+
+        self.weak_model.compile(
+            optimizer='adam', 
+            loss='sparse_categorical_crossentropy', 
+            metrics=['accuracy'])
 
     # Build the CNN model
     def build_train_model(self):
         self.create_generators()
+        self.build_weak_model()
+
         self.model = Sequential([
             Conv2D(32, (3, 3), activation='relu', input_shape=(
                 self.target_img_height, 
                 self.target_img_width, 
-                3)), # 3 for RGB, 2 for Greyscale
+                3)), # 3 for RGB, 1 for Greyscale
             MaxPooling2D((2, 2)),
             Conv2D(64, (3, 3), activation='relu'),
             MaxPooling2D((2, 2)),
@@ -153,73 +190,85 @@ class Explainer:
                 validation_steps=validation_steps,
                 epochs=10
             )
-            self.model.save_weights(self.checkpoint_path)
+            # self.model.save_weights(self.checkpoint_path)
+            # self.model.save(self.checkpoint_path)
         else:
-            self.model.load_weights(self.checkpoint_path)
+            self.model = tf.keras.models.load_model(self.checkpoint_path)
 
     # Function to get predictions
-    def predict(self, imgs):
-        return self.model.predict(imgs)
+    def predict_trained(self, imgs):      
+            return self.model.predict(imgs)
+    
+    def predict_untrained(self, imgs):
+        return self.weak_model.predict(imgs)
+
+    
+    def get_classes(self):
+        return self.class_names
+    
+    def get_prediction(self, img, trained=True):
+        predictions = ""
+        if trained:
+            predictions = self.predict_trained(img)
+        else:
+            predictions = self.predict_untrained(img)
+        predicted_class = np.argmax(predictions[0])
+        return self.class_names[predicted_class]
     
     def explain_lime_random(self):
-        self.build_train_model()
+        # self.build_train_model()
 
         random_index = random.randint(0, len(self.val_paths) - 1)
         img_path = self.val_paths[random_index]
         true_label = self.val_labels[random_index]
 
         # Load and preprocess the image
-        img = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
-        print(f"img0: {img.shape}")
-        # Predict the class of the image
-        predictions = self.model.predict(img)
-        predicted_class = np.argmax(predictions[0])
-        predicted_class_name = self.class_names[predicted_class]
+        img = ""
+        if not self.is_grey:
+            img = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
+        else: 
+            img = Imager.load_greyscale_image_to_rgb(img_path, (self.target_img_width, self.target_img_height))
 
-        # Create a LIME explainer
-        lime_explainer = lime_image.LimeImageExplainer()
-
-
-        # Generate LIME explanation
-        lime_explanation = lime_explainer.explain_instance(img[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
-
-        # Display the explanation
-        temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
-
-        # Get the weights for the top label
-        weights = lime_explanation.local_exp[lime_explanation.top_labels[0]]
-        weights = sorted(weights, key=lambda x: x[1], reverse=True)
-
-        # Convert weights to a DataFrame
-        df_weights = pd.DataFrame(weights, columns=['Superpixel', 'Weight'])
-
-        # print(df_weights)
-        return df_weights
+        return self.get_lime_explanations(img)
     
     def explain_shap_random(self):
-        self.build_train_model()   
+        # self.build_train_model()   
         random_index = random.randint(0, len(self.val_paths) - 1)
         img_path = self.val_paths[random_index]
         test_image = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
         return self.get_shap_explanation(test_image)
     
-    def get_shap_explanation(self, test_image):
-        self.build_train_model()
+    def get_shap_explanation(self, test_image, gradient=False, trained=True):
+        # self.build_train_model()
         images = []
-        for i in range(103):
+        for i in range(len(self.val_paths)):
             images.append(Imager.load_image(self.val_paths[i], (self.target_img_width, self.target_img_height)))
         background = images[:100]
-        e = shap.DeepExplainer(self.model, background)
+        e = 0
+
+        blackbox = self.model
+        if not trained:
+            blackbox = self.weak_model
+
+        if not gradient:
+            e = shap.DeepExplainer(blackbox, background)
+        else:
+            e = shap.GradientExplainer(blackbox, test_image)
         shap_values = e.shap_values(test_image)
-        print(f"Shap values: {shap_values.shape}")
+        # print(f"Shap values:\n{shap_values}")
         return shap_values
 
-    def get_lime_explanations(self, test_image):
-        self.build_train_model()
+    def get_lime_explanations(self, test_image, trained=True):
+        # self.build_train_model()
          # Create a LIME explainer
         lime_explainer = lime_image.LimeImageExplainer()
         # Generate LIME explanation
-        lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict, top_labels=3, hide_color=0, num_samples=1000)
+        lime_explanation = ""
+        if trained:
+            lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict_trained, hide_color=0, num_samples=1000)
+        else:
+            lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict_untrained, hide_color=0, num_samples=1000)
+
         # print(f"Lime: {lime_explanation}")
         # Display the explanation
         temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
