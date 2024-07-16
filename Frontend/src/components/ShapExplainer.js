@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
+import ColorScaleLegend from "./ColorScaleLegend";
+
 
 const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
   const containerRef = useRef(null);
   const [activeClass, setActiveClass] = useState(classNames[0]); // Initial class name
+  const [colorScaleMin, setColorScaleMin] = useState(null);
+  const [colorScaleMax, setColorScaleMax] = useState(null);
 
   useEffect(() => {
     if (shapValues == null) return;
@@ -80,10 +84,17 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
         const scaleX = scaledImgWidth / shapWidth;
         const scaleY = scaledImgHeight / shapHeight;
 
+        const flattenedShapValues = shapValues.flat(4);
+        const minShapValue = d3.min(flattenedShapValues);
+        const maxShapValue = d3.max(flattenedShapValues);
+
+        setColorScaleMin(minShapValue);
+        setColorScaleMax(maxShapValue);
+
         // Create a color scale
         const colorScale = d3
           .scaleSequential(d3.interpolatePRGn)
-          .domain([d3.min(shapValues.flat(4)), d3.max(shapValues.flat(4))]);
+          .domain([minShapValue, maxShapValue]);
         // console.log(shapValues);
         // Draw the SHAP values overlay
         for (let y = 0; y < shapHeight; y++) {
@@ -101,7 +112,8 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
             // }
 
             ctx.fillStyle = colorScale(total);
-            ctx.fillRect(x * scaleX, y * scaleY, scaleX - 1, scaleY - 1);
+            let offset = 1
+            ctx.fillRect(x * scaleX + offset, y * scaleY, scaleX - offset, scaleY - offset);
           }
         }
 
@@ -161,11 +173,26 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
   }, [imageUrl, shapValues, containerSize, classNames]);
 
   return (
-    <div className="relative w-[500px] h-[500px]">
-      <div className="absolute top-0 left-0 p-2 bg-transparent text-black text-lg text-center z-10">
-        Class: {activeClass}
+    <div>
+      <div className="relative w-[500px] h-[500px]">
+        <div className="absolute top-0 left-0 p-2 bg-transparent text-black text-lg text-center z-10">
+          Class: {activeClass}
+        </div>
+        <div
+          className="w-full h-full overflow-y-scroll"
+          ref={containerRef}
+        ></div>
       </div>
-      <div className="w-full h-full overflow-y-scroll" ref={containerRef}></div>
+      <div className="py-2 bg-white">
+        <ColorScaleLegend
+          min={-0.1}
+          max={0.1}
+          colorInterpolator={d3.interpolatePRGn}
+          width={containerSize}
+          height={20}
+          textHeight={40}
+        />
+      </div>
     </div>
   );
 };
