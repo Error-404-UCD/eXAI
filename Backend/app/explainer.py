@@ -238,12 +238,15 @@ class Explainer:
         test_image = Imager.load_image(img_path, (self.target_img_width, self.target_img_height))
         return self.get_shap_explanation(test_image)
     
-    def get_shap_explanation(self, test_image, gradient=False, trained=True):
+    def get_shap_explanation(self, test_image, gradient=False, trained=True, count=100):
         # self.build_train_model()
         images = []
         for i in range(len(self.val_paths)):
             images.append(Imager.load_image(self.val_paths[i], (self.target_img_width, self.target_img_height)))
-        background = images[:100]
+        if count > len(images):
+            count = len(images)
+        print(f"Background images count for SHAP: {count}")
+        background = images[:count]
         e = 0
 
         blackbox = self.model
