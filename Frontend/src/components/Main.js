@@ -9,7 +9,7 @@ const Main = () => {
     const [data, setData] = useState(null);
     const [imgUrl, setImgUrl] = useState(null);
     const uploadLink =
-      "http://127.0.0.1:5000/limeshapexplain/gradient=False&&background=1000&&mlModel=";
+      "http://127.0.0.1:5000/limeshapexplain/gradient=False&&background=100&&mlModel=";
 
     const fetchData = (imgFile, mlModel) => {
       if (imgFile == null) return;
