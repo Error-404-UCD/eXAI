@@ -29,9 +29,9 @@ RUN mkdir -p data
 RUN mkdir -p models/checkpoints
 
 # Download the Datasets
-RUN gdown --fuzzy "https://drive.google.com/file/d/14ueW-7m3HkjVIR1O2RjX3TPr_4ZS8Vh1/view?usp=sharing" -O data/ 
-RUN unzip data/Astronomy.zip -d data/Astronomy
-RUN rm data/Astronomy.zip
+# RUN gdown --fuzzy "https://drive.google.com/file/d/14ueW-7m3HkjVIR1O2RjX3TPr_4ZS8Vh1/view?usp=sharing" -O data/ 
+# RUN unzip data/Astronomy.zip -d data/Astronomy
+# RUN rm data/Astronomy.zip
 
 RUN gdown --fuzzy "https://drive.google.com/file/d/1MwIyLK1h0iEi3Lfi9piRR7LNQf6gXXYT/view?usp=drive_link" -O data/ 
 RUN unzip data/MNIST.zip -d data/MNIST
