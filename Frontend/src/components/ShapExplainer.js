@@ -248,8 +248,8 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
       </div>
       <div className="py-2 bg-white">
         <ColorScaleLegend
-          min={-0.05}
-          max={0.05}
+          min={-0.1}
+          max={0.1}
           colorInterpolator={d3.interpolatePRGn}
           width={containerSize}
           height={20}
