@@ -68,14 +68,10 @@ const LeftHalf = ({ fetchData }) => {
                         imgUrl={image}
                         width={400}
                         height={400}
-                        imgWidth={140}
-                        imgHeight={140}
-                        posX={0}
-                        posY={0}
-                        count={1}
                         alpha={100}
-                        useGrayScale={false}
-                        heatData={null}
+                        isPaintable={true}
+                        
+                        
                     />
                 </div>
 
