@@ -22,7 +22,7 @@ const LeftHalf = ({ fetchData }) => {
     };
 
     const handleDataFetch = () => {
-        console.log(imageFile);
+        // console.log(imageFile);
         fetchData(imageFile, selectedModel);
     };
 
@@ -78,7 +78,7 @@ const LeftHalf = ({ fetchData }) => {
                 <div className="flex flex-row mr-4 text-lg py-5">
                     <div className="px-5">DATASET</div>
                     <select
-                        onChange={console.log("Dataset changed")}
+                        // onChange={console.log("Dataset changed")}
                         defaultValue={"MNIST"}
                     >
                         <option value="MNIST">MNIST</option>

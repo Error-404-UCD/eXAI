@@ -126,11 +126,10 @@ const Canvas = ({ imgUrl, width, height, alpha, useGrayScale, isPaintable }) => 
           onMouseMove={paint}
           onMouseUp={stopPaint}
           onMouseLeave={stopPaint}
-          className="border-2 border-gray-300 mb-4"
         />
         {isPaintEnabled && (
           <div>
-            <div className="flex justify-start items-center mb-2">
+            <div className="flex justify-start items-center mb-2 py-3">
               <button
                 className={`mr-2 px-4 py-2 rounded cursor-pointer ${
                   tool === "brush" ? "bg-blue-500 text-white" : "bg-gray-200"

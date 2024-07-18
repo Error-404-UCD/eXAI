@@ -27,7 +27,7 @@ const ColorScaleLegend = ({ min, max, colorInterpolator, width, height, textHeig
     gradient
       .append("stop")
       .attr("offset", "0%")
-      .attr("stop-color", "rgb(75,0,130)");
+      .attr("stop-color", "rgb(48, 0, 79)");
 
     gradient
     .append("stop")
@@ -37,7 +37,7 @@ const ColorScaleLegend = ({ min, max, colorInterpolator, width, height, textHeig
     gradient
       .append("stop")
       .attr("offset", "100%")
-      .attr("stop-color", "rgb(0,100,0)");
+      .attr("stop-color", "rgb(0,80,0)");
 
     svg
       .append("rect")

@@ -7,8 +7,11 @@ import ColorScaleLegend from "./ColorScaleLegend";
 const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
   const containerRef = useRef(null);
   const [activeClass, setActiveClass] = useState(classNames[0]); // Initial class name
-  const [colorScaleMin, setColorScaleMin] = useState(null);
-  const [colorScaleMax, setColorScaleMax] = useState(null);
+//   const [colorScaleMin, setColorScaleMin] = useState(null);
+//   const [colorScaleMax, setColorScaleMax] = useState(null);
+  const [tooltipContent, setTooltipContent] = useState(0);
+  const [showToolTip, setShowToolTip] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (shapValues == null) return;
@@ -34,9 +37,9 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
       const shapHeight = shapValues[0].length;
       const classes = shapValues[0][0][0].length;
 
-      console.log("scaledImgWidth: " + scaledImgWidth);
-      console.log("scaledImgHeight: " + scaledImgHeight);
-      console.log("classes: " + classes);
+    //   console.log("scaledImgWidth: " + scaledImgWidth);
+    //   console.log("scaledImgHeight: " + scaledImgHeight);
+    //   console.log("classes: " + classes);
 
       // Clear any previous content
       d3.select(containerRef.current).selectAll("*").remove();
@@ -88,8 +91,8 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
         const minShapValue = d3.min(flattenedShapValues);
         const maxShapValue = d3.max(flattenedShapValues);
 
-        setColorScaleMin(minShapValue);
-        setColorScaleMax(maxShapValue);
+        // setColorScaleMin(minShapValue);
+        // setColorScaleMax(maxShapValue);
 
         // Create a color scale
         const colorScale = d3
@@ -120,6 +123,59 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
         return canvas.toDataURL();
       };
 
+      const handleMouseMove = (event, classIndex) => {
+        const mouseX = event.pageX;
+        const mouseY = event.pageY;
+
+        setMousePosition({ x: mouseX, y: mouseY });
+
+        const shapValue = getShapValueAtPosition(mouseX, mouseY, classIndex);
+        // console.log(shapValue);
+        setTooltipContent(shapValue);
+        // console.log(tooltipContent);
+      };
+
+      const getShapValueAtPosition = (mouseX, mouseY, classIndex) => {
+        const container = containerRef.current;
+        const imgElements = container.querySelectorAll("img");
+      
+        const imgElement = imgElements[classIndex];
+        //  console.log(imgElement);
+        // console.log();
+        let rect = imgElement.getBoundingClientRect();
+
+        const imgTop = rect.top + window.scrollY;
+        const imgLeft = rect.left + window.scrollX;
+
+        const yLen = shapValues.length;
+        const xLen = shapValues[0].length;
+
+        const scaleX = imgElement.clientWidth / yLen;
+        const scaleY = imgElement.clientHeight / xLen;
+        // console.log(`scaleY: ${scaleY}`);
+        // console.log(`imgLeft: ${imgLeft}`);
+        const shapX = Math.floor((mouseX - imgLeft) / scaleX);
+        const shapY = Math.floor((mouseY - imgTop) / scaleY);
+        // console.log(`shapX: ${shapX}`);
+        // console.log(`mouseX: ${mouseX}`);
+        // console.log(`shapY: ${shapY}`);
+        // console.log(`mouseY: ${mouseY}`);
+        // console.log(`classIndex: ${classIndex}`);
+        // console.log(
+        //   `shapValues[${shapY}][${shapX}][0][${classIndex}]: ${shapValues[shapY][shapX][0][classIndex]}`
+        // );
+
+
+        if (shapX < 0 || shapY < 0 || shapValues == null || shapY >= yLen || shapX >= xLen) return -1;
+
+        let total = 0;
+        for (let px = 0; px < 3; px++) {
+          total += shapValues[shapY][shapX][px][classIndex];
+        }
+
+        return total;
+      };
+
       // Clear any previous content
       d3.select(containerRef.current).selectAll("*").remove();
 
@@ -132,10 +188,14 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
         container
           .append("img")
           .attr("src", overlayDataUrl)
+          .attr("id", i)
           .style("display", "inline-block")
           .style("width", scaledImgWidth + "px")
           .style("height", scaledImgHeight + "px")
-          .style("margin-bottom", "15px");
+          .style("margin-bottom", "15px")
+          .on("mousemove", (event) => handleMouseMove(event, i))
+          .on("mouseenter", (event) => { setShowToolTip(true); })
+          .on("mouseleave", (event) => { setShowToolTip(false); });
       }
 
       // Add scroll event listener
@@ -162,7 +222,7 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
             const name = classNames[index];
             if (name != null) {
                 setActiveClass(name);
-                console.log(classNames[index]);
+                // console.log(classNames[index]);
             }
             
         }
@@ -193,6 +253,18 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
           textHeight={40}
         />
       </div>
+      { showToolTip && tooltipContent != -1 ? (
+        <div
+          className="absolute bg-white border border-gray-300 p-2"
+          style={{
+            top: mousePosition.y + 10,
+            left: mousePosition.x + 10,
+            zIndex: 999,
+          }}
+        >
+          {tooltipContent.toFixed(5)}
+        </div>
+      ) : null}
     </div>
   );
 };
