@@ -88,8 +88,11 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
         const scaleY = scaledImgHeight / shapHeight;
 
         const flattenedShapValues = shapValues.flat(4);
-        const minShapValue = d3.min(flattenedShapValues);
-        const maxShapValue = d3.max(flattenedShapValues);
+        // const minShapValue = d3.min(flattenedShapValues);
+        // const maxShapValue = d3.max(flattenedShapValues);
+
+        const minShapValue = -0.05;
+        const maxShapValue = 0.05;
 
         // setColorScaleMin(minShapValue);
         // setColorScaleMax(maxShapValue);
@@ -245,8 +248,8 @@ const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
       </div>
       <div className="py-2 bg-white">
         <ColorScaleLegend
-          min={-0.1}
-          max={0.1}
+          min={-0.05}
+          max={0.05}
           colorInterpolator={d3.interpolatePRGn}
           width={containerSize}
           height={20}
