@@ -266,15 +266,23 @@ class Explainer:
          # Create a LIME explainer
         lime_explainer = lime_image.LimeImageExplainer()
         # Generate LIME explanation
-        lime_explanation = ""
+        pred_fn = ""
         if trained:
-            lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict_trained, hide_color=0, num_samples=1000)
+            pred_fn = self.predict_trained
         else:
-            lime_explanation = lime_explainer.explain_instance(test_image[0], self.predict_untrained, hide_color=0, num_samples=1000)
+            pred_fn = self.predict_untrained
 
-        # print(f"Lime: {lime_explanation}")
+        lime_explanation = lime_explainer.explain_instance(test_image[0], pred_fn, hide_color=0, num_samples=100)
+
+        
+
+        print(f"Lime: {lime_explanation}")
         # Display the explanation
-        temp, mask = lime_explanation.get_image_and_mask(lime_explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False)
+        temp, mask = lime_explanation.get_image_and_mask(
+                                            lime_explanation.top_labels[0], 
+                                            positive_only=False,
+                                            negative_only=False,
+                                            num_features=5)
         # print(f"test img: {test_image}")
         # print(f"temp: {temp}")
         # print(f"mask: {mask}")
