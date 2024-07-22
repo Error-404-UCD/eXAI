@@ -35,7 +35,7 @@ const Main = () => {
     };
 
     return (
-        <div className="flex flex-row">
+        <div className="flex flex-row justify-center">
             <LeftHalf fetchData={fetchData} />
             <RightHalf imageUrl={imgUrl} data={data} />
         </div>
