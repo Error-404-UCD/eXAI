@@ -1,4 +1,3 @@
-from explainer import Explainer
 from utils.imager import Imager
 from utils.numpyarrayencoder import NumpyArrayEncoder
 from utils.converter import Converter
@@ -8,8 +7,12 @@ from flask import request, jsonify
 from flask_cors import CORS
 import os
 import json
-import numpy as np
-
+from data import Data
+#import ffn
+from ffn import FFN
+from shapy import Shapy
+from limey import Limey
+from data import Data
 import h5py
 print("h5py file location:", h5py.__file__)
 
@@ -41,7 +44,8 @@ if __name__ == "__main__":
     batch_size          = int(config["MLMODEL"]["BatchSize"])
     change_target_dim   = int(config["MLMODEL"]["ChangeImageTargetDim"])
     default_dataset     = str(config["MLMODEL"]["DefaultDatasetSelection"])
-
+    epochs              = int(config["MLMODEL"]["Epoch"])
+    bg_count            = int(config["MLMODEL"]["Count"])
     # if change target dim == 0 then set target_img_width, target_img_height = -1
     if change_target_dim == 0:
         target_img_width = -1
@@ -62,14 +66,40 @@ if __name__ == "__main__":
     print(f"img_folder: {img_folder}")
     print(f"checkpoint_path: {checkpoint_path}")
 
-    explainer = Explainer(
-            image_folder=img_folder,
+    # explainer = Explainer(
+    #         image_folder=img_folder,
+    #         checkpoint_path=checkpoint_path,
+    #         target_img_width=target_img_width,
+    #         target_img_height=target_img_height,
+    #         batch_size=batch_size,
+    #         epoch=epoch
+    #     )
+       
+    data = Data(image_folder=img_folder,
             checkpoint_path=checkpoint_path,
             target_img_width=target_img_width,
             target_img_height=target_img_height,
-            batch_size=batch_size
-        )
-    explainer.build_train_model()
+            batch_size=batch_size)
+    
+    class_names = data.class_names
+    train_imgs = data.train_imgs
+    val_imgs = data.val_imgs
+
+    ffn = FFN(checkpoint_path=checkpoint_path, 
+              target_img_height=data.target_img_height, 
+              target_img_width=data.target_img_width, 
+              batch_size=batch_size,
+              train_imgs=train_imgs,
+              val_imgs=val_imgs,
+              class_names=class_names,
+              epochs=epochs)
+    
+    bgimgs =  data.get_validation_images(count=bg_count)
+    
+    shap = Shapy()
+    #shap.get_shap_explanation()
+    lime = Limey(target_img_height=target_img_height,
+                 target_img_width=target_img_width)
     # explainer.explain_lime_random()
     # explainer.explain_shap_random()
 
@@ -93,13 +123,12 @@ if __name__ == "__main__":
             trained = True if model == "M1" else False
                 
             print(f"trained: {trained}")
-            shapval = explainer.get_shap_explanation(image, gradient=gradient, trained=trained)
-            limeval = explainer.get_lime_explanations(image)
-            prediction = explainer.get_prediction(image, trained=trained)
-            classes = explainer.get_classes()
+            shapval = shap.get_shap_explanation(image, gradient=gradient, trained=trained, count=bg_count)
+            limeval = lime.get_lime_explanations(image, predict_trained=ffn.predict_trained, predict_untrained=ffn.predict_untrained)
+            prediction = ffn.get_prediction(image, trained=trained)
             # print(limeval)
             # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
-            numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction, "classes": classes }
+            numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction}
             
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
     
@@ -111,14 +140,11 @@ if __name__ == "__main__":
         if request.method == 'POST':
             f = request.files['file']
             print(f"Found file: {f}")
-            image = Imager.load_image(f, 
-                (target_img_width,
-                target_img_height))
-            val = explainer.get_lime_explanations(image)
-            prediction = explainer.get_prediction(image)
-            classes = explainer.get_classes()
+            image = Imager.load_image(f,(target_img_width, target_img_height))
+            val = lime.get_lime_explanations(image)
+            prediction = ffn.get_prediction(image)
             # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
-            numpyData = { "limearray": val, "prediction": prediction, "classes": classes }
+            numpyData = { "limearray": val, "prediction": prediction}
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
 
     
