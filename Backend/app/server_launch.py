@@ -7,12 +7,10 @@ from flask import request, jsonify
 from flask_cors import CORS
 import os
 import json
-from data import Data
-#import ffn
-from ffn import FFN
-from shapy import Shapy
-from limey import Limey
-from data import Data
+from data_generator import Data_Generator
+from feed_forward_network import FeedForwardNetwork
+from shap_explainer import Shap_Explainer
+from lime_explainer import Lime_Explainer
 import h5py
 print("h5py file location:", h5py.__file__)
 
@@ -20,10 +18,6 @@ print("h5py file location:", h5py.__file__)
 if __name__ == "__main__":
     config = configparser.ConfigParser()
 
-    # Need to provide absolute path
-    # https://stackoverflow.com/questions/77226532/configparser-for-ini-file-throwing-key-error-when-running-using-docker-image-in
-
-    # script_dir = os.path.dirname(os.path.abspath(__file__))
     script_dir = "app"
     config_file_path = os.path.join(script_dir, "config.ini")
     config.read(config_file_path)
@@ -46,12 +40,11 @@ if __name__ == "__main__":
     default_dataset     = str(config["MLMODEL"]["DefaultDatasetSelection"])
     epochs              = int(config["MLMODEL"]["Epoch"])
     bg_count            = int(config["MLMODEL"]["Count"])
-    # if change target dim == 0 then set target_img_width, target_img_height = -1
+    
     if change_target_dim == 0:
         target_img_width = -1
         target_img_height = -1
 
-    # change dataset as per selection
     img_folder = ""
     checkpoint_path = ""
 
@@ -66,34 +59,13 @@ if __name__ == "__main__":
     print(f"img_folder: {img_folder}")
     print(f"checkpoint_path: {checkpoint_path}")
 
-    # explainer = Explainer(
-    #         image_folder=img_folder,
-    #         checkpoint_path=checkpoint_path,
-    #         target_img_width=target_img_width,
-    #         target_img_height=target_img_height,
-    #         batch_size=batch_size,
-    #         epoch=epoch
-    #     )
-    # print(f">>>>>>>>>>>>>>>>>>>>>img_folder: {img_folder}")
-
-    data = Data(image_folder=img_folder,
+    data = Data_Generator(image_folder=img_folder,
             checkpoint_path=checkpoint_path,
             target_img_width=target_img_width,
             target_img_height=target_img_height,
             batch_size=batch_size)
-    
-    # class_names = data.class_names
-    # train_X = data.train_X
-    # val_X = data.val_X
-    # train_y = data.train_y
-    # val_y = data.val_y
 
-    # print(f"Train imgs: {len(train_imgs)}")
-
-    # exit()
-    # target_img_height, target_img_width, class_names, checkpoint_path, epochs, train_gen, val_gen, batch_size
-    ffn = FFN(
-            data.target_img_height, 
+    ffn = FeedForwardNetwork(data.target_img_height, 
             data.target_img_width, 
             data.class_names,
             checkpoint_path,
@@ -108,21 +80,17 @@ if __name__ == "__main__":
     
     bgimgs =  data.get_validation_images(count=bg_count)
     
-    shap = Shapy()
-    #shap.get_shap_explanation()
-    # predict_trained, predict_untrained, target_img_width, target_img_height
-    lime = Limey(ffn.predict_trained, 
+    shap = Shap_Explainer()
+
+    lime = Lime_Explainer(ffn.predict_trained, 
                 ffn.predict_untrained,
                 target_img_width,
                 target_img_height)
-    # explainer.explain_lime_random()
-    # explainer.explain_shap_random()
 
     app = Flask(__name__)
-    # Use CORS when running server and the client on the same machine
+
     CORS(app)
 
-    # https://rapidapi.com/guides/upload-files-react-axios
     @app.route('/limeshapexplain/gradient=<gradient>&&mlModel=<model>', methods=['GET', 'POST'])
     def limeshap_explain(gradient, model):
         print(f"Req: {len(request.files)}")
@@ -138,14 +106,11 @@ if __name__ == "__main__":
             trained = True if model == "M1" else False
                 
             print(f"trained: {trained}")
-            # blackbox, background, test_image
-            shapval = shap.get_explanation(ffn.model, data.get_validation_images(count=100), image)
+
+            shapval = shap.get_shap_explanations(ffn.model, data.get_validation_images(count=100), image)
             limeval = lime.get_lime_explanations(image)
             prediction = ffn.get_prediction(image, trained=trained)
-            # print(limeval)
-            # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
             numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction}
-            
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
     
         return encodedNumpyData
@@ -159,11 +124,9 @@ if __name__ == "__main__":
             image = Imager.load_image(f,(target_img_width, target_img_height))
             val = lime.get_lime_explanations(image)
             prediction = ffn.get_prediction(image)
-            # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/
             numpyData = { "limearray": val, "prediction": prediction}
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
 
-    
         return encodedNumpyData
     
     port = int(os.environ.get('PORT', 5000))
