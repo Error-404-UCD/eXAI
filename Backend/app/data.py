@@ -71,6 +71,8 @@ class Data:
             test_size=0.2, 
             stratify=self.labels)
         
+        self.create_generators()
+        
         
 
     # Function to resize images
@@ -88,55 +90,54 @@ class Data:
 
     def data_generator(self, file_paths, labels, batch_size, img_height, img_width):
         num_samples = len(file_paths)
-        while True:
-            for offset in range(0, num_samples, batch_size):
-                batch_paths = file_paths[offset:offset+batch_size]
-                batch_labels = labels[offset:offset+batch_size]
-                
-                images = []
-                for path in batch_paths:
-                    img = Imager.resize_image(path, (img_height, img_width))
-                    img = Imager.img_to_array(img)
-                    img /= 255.0
-                    images.append(img)
-                    
-                yield np.array(images), np.array(batch_labels)
+
+        X = []
+        y = []
+        for offset in range(0, num_samples, batch_size):
+            batch_paths = file_paths[offset:offset+batch_size]
+            batch_labels = labels[offset:offset+batch_size]
+            
+            images = []
+            for path in batch_paths:
+                img = Imager.resize_image(path, (img_height, img_width))
+                img = Imager.img_to_array(img)
+                img /= 255.0
+        
+                images.append(img)
+
+            X.append(np.array(images))
+            y.append(np.array(batch_labels))         
+        return (X, y)
 
     # Create training and validation generators
     def create_generators(self):
         
-        self.train_generator = self.data_generator(
+        self.train_X, self.train_y = self.data_generator(
             self.train_paths, 
             self.train_labels, 
             self.batch_size, 
             self.target_img_height, 
             self.target_img_width)
-        self.val_generator = self.data_generator(
+        self.val_X, self.val_y = self.data_generator(
             self.val_paths, 
             self.val_labels, 
             self.batch_size, 
             self.target_img_height,
             self.target_img_width)
         
-        #self.train_imgs = []
-        for path in self.train_generator:
-            img = Imager.resize_image(path, (self.target_img_height, self.target_img_width))
-            img = Imager.img_to_array(img)
-            img /= 255.0
-            self.train_imgs.append(img)
-            
-        #self.val_imgs = []
-        for path in self.val_generator:
-            img = Imager.resize_image(path, (self.target_img_height, self.target_img_width))
-            img = Imager.img_to_array(img)
-            img /= 255.0
-            self.val_imgs.append(img)
+ 
 
     def get_validation_images(self, count=0):
         if count != 0:
-            return self.val_imgs[:count]
+            return self.val_X[:count]
         else:
-            return self.val_imgs
+            return self.val_X
+        
+    def get_train_count(self):
+        return len(self.train_paths)
+
+    def get_val_count(self):
+        return len(self.val_paths)
 
 
     

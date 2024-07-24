@@ -5,17 +5,28 @@ import os
 import numpy as np
 
 class FFN:
-    def __init__(self, target_img_height, target_img_width, class_names, checkpoint_path, epochs, val_imgs, train_imgs, batch_size):
-         self.target_img_height = target_img_height #done
-         self.target_img_width = target_img_width #done
-         self.class_names = class_names #done
-         self.checkpoint_path = checkpoint_path #done
-         self.epochs = epochs #done
-         self.train_imgs = train_imgs #done
-         self.val_imgs = val_imgs #done
-         self.batch_size = batch_size #done
+    def __init__(self, 
+            target_img_height, 
+            target_img_width, 
+            class_names, 
+            checkpoint_path, 
+            epochs, 
+            train_X,
+            train_y,
+            val_X,
+            val_y, 
+            batch_size, 
+            train_count, 
+            val_count):
+        self.target_img_height = target_img_height #done
+        self.target_img_width = target_img_width #done
+        self.class_names = class_names #done
+        self.checkpoint_path = checkpoint_path #done
+        self.epochs = epochs #done
+        self.batch_size = batch_size #done
+    
         
-         self.build_train_model(train_imgs, val_imgs, batch_size, checkpoint_path, epochs)
+        self.build_train_model(train_X=train_X, train_y=train_y, val_X=val_X, val_y=val_y, batch_size=batch_size, checkpoint_path=checkpoint_path, epochs=epochs, train_count=train_count, val_count=val_count)
 
     def build_weak_model(self):
         self.weak_model = Sequential([
@@ -38,7 +49,7 @@ class FFN:
             loss='sparse_categorical_crossentropy', 
             metrics=['accuracy'])
     # Build the CNN model
-    def build_train_model(self, train_imgs, val_imgs, batch_size, checkpoint_path, epochs):
+    def build_train_model(self, train_X, train_y, val_X, val_y, batch_size, checkpoint_path, epochs, train_count, val_count):
         #self.create_generators() not here
         self.build_weak_model()
 
@@ -63,15 +74,19 @@ class FFN:
             metrics=['accuracy'])
 
         # Calculate steps per epoch and validation steps
-        steps_per_epoch = len(train_imgs) // batch_size
-        validation_steps = len(val_imgs) // batch_size
+        steps_per_epoch = (train_count) // batch_size
+        validation_steps = (val_count) // batch_size
+
+        # print(f"Train imgs: {len(steps_per_epoch)}")
 
         if not (os.path.exists(checkpoint_path)):
+            # pass
             # Train the model
             history = self.model.fit(
-                train_imgs,
+                train_X,
+                train_y,
                 steps_per_epoch=steps_per_epoch,
-                validation_data=val_imgs,
+                validation_data=(val_X, val_y),
                 validation_steps=validation_steps,
                 epochs=epochs
                 )

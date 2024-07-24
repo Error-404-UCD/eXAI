@@ -74,32 +74,47 @@ if __name__ == "__main__":
     #         batch_size=batch_size,
     #         epoch=epoch
     #     )
-       
+    # print(f">>>>>>>>>>>>>>>>>>>>>img_folder: {img_folder}")
+
     data = Data(image_folder=img_folder,
             checkpoint_path=checkpoint_path,
             target_img_width=target_img_width,
             target_img_height=target_img_height,
             batch_size=batch_size)
     
-    class_names = data.class_names
-    train_imgs = data.train_imgs
-    val_imgs = data.val_imgs
+    # class_names = data.class_names
+    # train_X = data.train_X
+    # val_X = data.val_X
+    # train_y = data.train_y
+    # val_y = data.val_y
 
-    ffn = FFN(checkpoint_path=checkpoint_path, 
-              target_img_height=data.target_img_height, 
-              target_img_width=data.target_img_width, 
-              batch_size=batch_size,
-              train_imgs=train_imgs,
-              val_imgs=val_imgs,
-              class_names=class_names,
-              epochs=epochs)
+    # print(f"Train imgs: {len(train_imgs)}")
+
+    # exit()
+    # target_img_height, target_img_width, class_names, checkpoint_path, epochs, train_gen, val_gen, batch_size
+    ffn = FFN(
+            data.target_img_height, 
+            data.target_img_width, 
+            data.class_names,
+            checkpoint_path,
+            epochs,
+            data.train_X,
+            data.train_y,
+            data.val_X,
+            data.val_y,
+            batch_size,
+            data.get_train_count(),
+            data.get_val_count())
     
     bgimgs =  data.get_validation_images(count=bg_count)
     
     shap = Shapy()
     #shap.get_shap_explanation()
-    lime = Limey(target_img_height=target_img_height,
-                 target_img_width=target_img_width)
+    # predict_trained, predict_untrained, target_img_width, target_img_height
+    lime = Limey(ffn.predict_trained, 
+                ffn.predict_untrained,
+                target_img_width,
+                target_img_height)
     # explainer.explain_lime_random()
     # explainer.explain_shap_random()
 
@@ -123,8 +138,9 @@ if __name__ == "__main__":
             trained = True if model == "M1" else False
                 
             print(f"trained: {trained}")
-            shapval = shap.get_shap_explanation(image, gradient=gradient, trained=trained, count=bg_count)
-            limeval = lime.get_lime_explanations(image, predict_trained=ffn.predict_trained, predict_untrained=ffn.predict_untrained)
+            # blackbox, background, test_image
+            shapval = shap.get_explanation(ffn.model, data.get_validation_images(count=100), image)
+            limeval = lime.get_lime_explanations(image)
             prediction = ffn.get_prediction(image, trained=trained)
             # print(limeval)
             # Reference: https://pynative.com/python-serialize-numpy-ndarray-into-json/

@@ -3,6 +3,10 @@ import * as d3 from "d3";
 
 
 const ShapExplainer = ({ imageUrl, shapValues, containerSize, classNames }) => {
+
+    if (classNames == null) {
+        classNames = ["None"];
+    }
   const containerRef = useRef(null);
   const [activeClass, setActiveClass] = useState(classNames[0]); // Initial class name
 
