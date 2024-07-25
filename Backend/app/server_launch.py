@@ -92,28 +92,33 @@ if __name__ == "__main__":
 
     app = Flask(__name__)
     CORS(app)
-
+    busy = False
     @app.route('/limeshapexplain/gradient=<gradient>&&background=<bg_count>&&mlModel=<model>', methods=['GET', 'POST'])
     def limeshap_explain(gradient, bg_count, model):
+        global busy
         print(f"Req: {len(request.files)}")
         if request.method == 'POST':
             f = request.files['file']
             print(f"Found file: {f}")
-            image = Imager.load_image(f, 
-                (target_img_width,
-                target_img_height))
-            
-            gradient = Converter.str2bool(gradient)
-            bg_count = int(bg_count)
-            blackbox = ffn_super if model == "M1" else ffn_tiny
-            shapval = shap.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
-            limeval = lime.get_explanation(image, predict_fn=blackbox.predict)
-            classes = blackbox.get_classes()
-            prediction = blackbox.get_prediction(image)
-            numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction, "classes": classes }
-            encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
+            if not busy:
+                image = Imager.load_image(f, 
+                    (target_img_width,
+                    target_img_height))
+                
+                gradient = Converter.str2bool(gradient)
+                bg_count = int(bg_count)
+                blackbox = ffn_super if model == "M1" else ffn_tiny
+                busy = True
+                shapval = shap.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
+                limeval = lime.get_explanation(image, predict_fn=blackbox.predict)
+                classes = blackbox.get_classes()
+                prediction = blackbox.get_prediction(image)
+                busy = False
+                numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction, "classes": classes }
+                encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
     
-        return encodedNumpyData
+                return encodedNumpyData
+        return None
     
     port = int(os.environ.get('PORT', port))
     app.run(debug=False, host=ip_address, port=port)

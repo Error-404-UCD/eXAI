@@ -6,7 +6,7 @@ from tensorflow.keras.preprocessing.image import img_to_array
 class Imager:
     def resize_image(img_path, target_size):
         img = Image.open(img_path)
-        if img.mode == 'L':
+        if img.mode != 'RGB':
             img = img.convert('RGB')
 
         tx = target_size[0]
