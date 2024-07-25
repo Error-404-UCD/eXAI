@@ -1,8 +1,8 @@
 import shap
 
 class Shap_Explainer:
-    def get_shap_explanations(self, blackbox, background, test_image, gradient=False):
-        print(f"background: {len(background)}")
+    # Make sure that background has multiple images and the images are of same dimensions as the model input size and test_img dimensions
+    def get_explanation(self, blackbox, background, test_image, gradient=False):
         e = ""
         if not gradient:
             e = shap.DeepExplainer(blackbox, background)

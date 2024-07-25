@@ -2,18 +2,14 @@ from utils.imager import Imager
 from utils.numpyarrayencoder import NumpyArrayEncoder
 from utils.converter import Converter
 import configparser
-from flask import Flask
-from flask import request, jsonify
+from flask import Flask, request
 from flask_cors import CORS
 import os
 import json
-from data_generator import Data_Generator
+from data_loader import Data_Loader
 from feed_forward_network import FeedForwardNetwork
 from shap_explainer import Shap_Explainer
 from lime_explainer import Lime_Explainer
-import h5py
-print("h5py file location:", h5py.__file__)
-
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
@@ -24,22 +20,27 @@ if __name__ == "__main__":
     config.read(config_file_path)
     print(list(config.keys()))
 
-    astro_img_folder          = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
-    astro_checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
-                            config["MLMODEL"]["AstronomyModelCheckpointName"])
-    mnist_img_folder          = script_dir + "/" + str(config["MLMODEL"]["MNISTImagesPath"])
+    # Get configuration constants
+    astro_img_folder            = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
+    astro_checkpoint_path       = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
+                                    config["MLMODEL"]["AstronomyModelCheckpointName"])
+    mnist_img_folder            = script_dir + "/" + str(config["MLMODEL"]["MNISTImagesPath"])
+    mnist_checkpoint_path       = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
+                                    config["MLMODEL"]["MNISTModelCheckpointName"])
+    
+    target_img_width            = int(config["MLMODEL"]["TargetImageWidth"])
+    target_img_height           = int(config["MLMODEL"]["TargetImageHeight"])
+    batch_size                  = int(config["MLMODEL"]["BatchSize"])
+    change_target_dim           = int(config["MLMODEL"]["ChangeImageTargetDim"])
+    default_dataset             = str(config["MLMODEL"]["DefaultDatasetSelection"])
+    epochs                      = int(config["MLMODEL"]["Epochs"])
+
+    ip_address                  = str(config["ROUTING"]["IP"])
+    port                        = int(config["ROUTING"]["PORT"])
+    
     print(f"mnist_img_folder: {mnist_img_folder}")
-    mnist_checkpoint_path     = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
-                            config["MLMODEL"]["MNISTModelCheckpointName"])
     print(f"mnist_checkpoint_path: {mnist_checkpoint_path}")
 
-    target_img_width    = int(config["MLMODEL"]["TargetImageWidth"])
-    target_img_height   = int(config["MLMODEL"]["TargetImageHeight"])
-    batch_size          = int(config["MLMODEL"]["BatchSize"])
-    change_target_dim   = int(config["MLMODEL"]["ChangeImageTargetDim"])
-    default_dataset     = str(config["MLMODEL"]["DefaultDatasetSelection"])
-    epochs              = int(config["MLMODEL"]["Epoch"])
-    bg_count            = int(config["MLMODEL"]["Count"])
     
     if change_target_dim == 0:
         target_img_width = -1
@@ -59,40 +60,41 @@ if __name__ == "__main__":
     print(f"img_folder: {img_folder}")
     print(f"checkpoint_path: {checkpoint_path}")
 
-    data = Data_Generator(image_folder=img_folder,
-            checkpoint_path=checkpoint_path,
+    data_loader = Data_Loader(
+            image_folder=img_folder,
             target_img_width=target_img_width,
             target_img_height=target_img_height,
             batch_size=batch_size)
-
-    ffn = FeedForwardNetwork(data.target_img_height, 
-            data.target_img_width, 
-            data.class_names,
-            checkpoint_path,
-            epochs,
-            data.train_X,
-            data.train_y,
-            data.val_X,
-            data.val_y,
-            batch_size,
-            data.get_train_count(),
-            data.get_val_count())
     
-    bgimgs =  data.get_validation_images(count=bg_count)
+    ffn_super = FeedForwardNetwork(
+                                data_loader.target_img_width,
+                                data_loader.target_img_height,
+                                data_loader.class_names)
     
+    ffn_super.train(train_gen=data_loader.train_generator, 
+                    val_gen= data_loader.val_generator, 
+                    batch_size=batch_size, 
+                    checkpoint_path=checkpoint_path,
+                    epochs=epochs, 
+                    train_count=data_loader.get_train_count(), 
+                    val_count=data_loader.get_val_count())
+    
+    ffn_tiny = FeedForwardNetwork(
+                                data_loader.target_img_width,
+                                data_loader.target_img_height,
+                                data_loader.class_names)
+    
+    # Train the model to get better results
+    # ffn_tiny.train
+ 
     shap = Shap_Explainer()
-
-    lime = Lime_Explainer(ffn.predict_trained, 
-                ffn.predict_untrained,
-                target_img_width,
-                target_img_height)
+    lime = Lime_Explainer()
 
     app = Flask(__name__)
-
     CORS(app)
 
-    @app.route('/limeshapexplain/gradient=<gradient>&&mlModel=<model>', methods=['GET', 'POST'])
-    def limeshap_explain(gradient, model):
+    @app.route('/limeshapexplain/gradient=<gradient>&&background=<bg_count>&&mlModel=<model>', methods=['GET', 'POST'])
+    def limeshap_explain(gradient, bg_count, model):
         print(f"Req: {len(request.files)}")
         if request.method == 'POST':
             f = request.files['file']
@@ -102,32 +104,16 @@ if __name__ == "__main__":
                 target_img_height))
             
             gradient = Converter.str2bool(gradient)
-
-            trained = True if model == "M1" else False
-                
-            print(f"trained: {trained}")
-
-            shapval = shap.get_shap_explanations(ffn.model, data.get_validation_images(count=100), image)
-            limeval = lime.get_lime_explanations(image)
-            prediction = ffn.get_prediction(image, trained=trained)
-            numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction}
+            bg_count = int(bg_count)
+            blackbox = ffn_super if model == "M1" else ffn_tiny
+            shapval = shap.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
+            limeval = lime.get_explanation(image, predict_fn=blackbox.predict)
+            classes = blackbox.get_classes()
+            prediction = blackbox.get_prediction(image)
+            numpyData = { "shaparray": shapval, "limearray": limeval, "prediction": prediction, "classes": classes }
             encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
     
         return encodedNumpyData
     
-    @app.route('/limeexplain', methods=['GET', 'POST'])
-    def lime_explain():
-        print(f"Req: {len(request.files)}")
-        if request.method == 'POST':
-            f = request.files['file']
-            print(f"Found file: {f}")
-            image = Imager.load_image(f,(target_img_width, target_img_height))
-            val = lime.get_lime_explanations(image)
-            prediction = ffn.get_prediction(image)
-            numpyData = { "limearray": val, "prediction": prediction}
-            encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
-
-        return encodedNumpyData
-    
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', port))
+    app.run(debug=False, host=ip_address, port=port)

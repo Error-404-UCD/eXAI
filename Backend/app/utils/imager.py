@@ -19,10 +19,11 @@ class Imager:
         img = img.resize((tx, ty))
         return img
     
-    def load_image(img_path, target_size):
+    def load_image(img_path, target_size, expand_axis=0):
         img = Imager.resize_image(img_path, target_size)
         img = Imager.img_to_array(img)
-        img = np.expand_dims(img, axis=0)
+        if expand_axis >= 0:
+            img = np.expand_dims(img, axis=expand_axis)
         img = img / 255.0
         return img
     
