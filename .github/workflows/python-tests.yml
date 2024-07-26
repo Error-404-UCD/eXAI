@@ -24,4 +24,4 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest  # Assuming you are using pytest to run your tests
+        python -m unittest discover -s tests # Assuming you are using pytest to run your tests
