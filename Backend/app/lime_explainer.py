@@ -1,7 +1,7 @@
 from lime import lime_image
 
 class Lime_Explainer:
-    def get_explanation(self, test_image, predict_fn):
+    def get_explanation(test_image, predict_fn):
         lime_explainer = lime_image.LimeImageExplainer()
         lime_explanation = lime_explainer.explain_instance(test_image[0], 
                                                         predict_fn, 

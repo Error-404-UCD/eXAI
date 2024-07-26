@@ -87,9 +87,6 @@ if __name__ == "__main__":
     # Train the model to get better results
     # ffn_tiny.train
  
-    shap = Shap_Explainer()
-    lime = Lime_Explainer()
-
     app = Flask(__name__)
     CORS(app)
     busy = False
@@ -109,8 +106,8 @@ if __name__ == "__main__":
                 bg_count = int(bg_count)
                 blackbox = ffn_super if model == "M1" else ffn_tiny
                 busy = True
-                shapval = shap.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
-                limeval = lime.get_explanation(image, predict_fn=blackbox.predict)
+                shapval = Shap_Explainer.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
+                limeval = Lime_Explainer.get_explanation(image, predict_fn=blackbox.predict)
                 classes = blackbox.get_classes()
                 prediction = blackbox.get_prediction(image)
                 busy = False
