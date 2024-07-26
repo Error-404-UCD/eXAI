@@ -20,21 +20,21 @@ class TestShapExplainer(unittest.TestCase):
             tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
             tf.keras.layers.MaxPooling2D((2, 2)),
             tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(10, activation='softmax')
+            tf.keras.layers.Dense(3, activation='softmax')
         ])
         
         # Compile the model
         self.blackbox.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
 
-        self.blackbox.predict = MagicMock(return_value=np.array([[0.1, 0.9]]))
 
     def test_get_explanation_deep(self):
         shap_values = ShapExplainer.get_explanation(self.blackbox, self.background, self.test_image)
-        print(shap_values)
+        
         shap_values_array = np.array(shap_values)
+        print(shap_values_array.shape)
         # Check the shap_values output
         self.assertIsInstance(shap_values_array[0][0][0][0][0], float)
-        self.assertEqual(shap_values_array.shape[-1], 10)
+        self.assertEqual(shap_values_array.shape[-1], 3)
 
 
 if __name__ == '__main__':
