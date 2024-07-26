@@ -31,9 +31,10 @@ class TestShapExplainer(unittest.TestCase):
     def test_get_explanation_deep(self):
         shap_values = ShapExplainer.get_explanation(self.blackbox, self.background, self.test_image)
         print(shap_values)
+        shap_values_array = np.array(shap_values)
         # Check the shap_values output
-        self.assertIsInstance(shap_values[0][0][0][0][0], float)
-        self.assertEqual(shap_values.shape[-1], 10)
+        self.assertIsInstance(shap_values_array[0][0][0][0][0], float)
+        self.assertEqual(shap_values_array.shape[-1], 10)
 
 
 if __name__ == '__main__':
