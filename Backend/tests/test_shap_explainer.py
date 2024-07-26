@@ -13,7 +13,6 @@ class TestShapExplainer(unittest.TestCase):
         # Create a random test image with shape (1, 150, 150, 3)
         self.test_image = np.random.rand(1, 150, 150, 3).astype(np.float32)
         
-        # Mock the blackbox model
         # Create a simple TensorFlow model
         self.blackbox = tf.keras.Sequential([
             tf.keras.layers.InputLayer(input_shape=(150, 150, 3)),
