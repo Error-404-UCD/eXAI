@@ -23,5 +23,6 @@ jobs:
         # pip install shap tensorflow
 
     - name: Run tests
+      working-directory: Backend  # Change directory to Backend
       run: |
-        python -m unittest discover -s tests # Assuming you are using pytest to run your tests
+        python -m unittest discover -s tests  # Assuming you are using unittest to run your tests
