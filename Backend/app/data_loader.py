@@ -2,12 +2,12 @@ import os
 from PIL import Image
 import numpy as np
 from PIL import Image
-from utils.imager import Imager
+from app.utils.imager import Imager
 from sklearn.model_selection import train_test_split
 
 Image.MAX_IMAGE_PIXELS = None
 
-class Data_Loader:
+class DataLoader:
     def __init__(
             self, 
             image_folder,
@@ -94,9 +94,9 @@ class Data_Loader:
             self.target_img_height,
             self.target_img_width)
         
-    def get_validation_images(self, count=0):
+    def get_validation_images(self, count=-1):
         if count < 0 or count > len(self.val_paths):
-            print("Warning! Check your count when getting validation images. Currently returning all possible images")
+            # print("DataLoader Warning! Check your count when getting validation images. Currently returning all possible images")
             count = len(self.val_paths)
         
         images = []

@@ -1,15 +1,15 @@
-from utils.imager import Imager
-from utils.numpyarrayencoder import NumpyArrayEncoder
-from utils.converter import Converter
+from app.utils.imager import Imager
+from app.utils.numpy_array_encoder import NumpyArrayEncoder
+from app.utils.converter import Converter
 import configparser
 from flask import Flask, request
 from flask_cors import CORS
 import os
 import json
-from data_loader import Data_Loader
-from feed_forward_network import FeedForwardNetwork
-from shap_explainer import Shap_Explainer
-from lime_explainer import Lime_Explainer
+from app.data_loader import DataLoader
+from app.feed_forward_network import FeedForwardNetwork
+from app.shap_explainer import ShapExplainer
+from app.lime_explainer import LimeExplainer
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     print(f"img_folder: {img_folder}")
     print(f"checkpoint_path: {checkpoint_path}")
 
-    data_loader = Data_Loader(
+    data_loader = DataLoader(
             image_folder=img_folder,
             target_img_width=target_img_width,
             target_img_height=target_img_height,
@@ -106,8 +106,8 @@ if __name__ == "__main__":
                 bg_count = int(bg_count)
                 blackbox = ffn_super if model == "M1" else ffn_tiny
                 busy = True
-                shapval = Shap_Explainer.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
-                limeval = Lime_Explainer.get_explanation(image, predict_fn=blackbox.predict)
+                shapval = ShapExplainer.get_explanation(blackbox.model, data_loader.get_validation_images(count=bg_count), image)
+                limeval = LimeExplainer.get_explanation(image, predict_fn=blackbox.predict)
                 classes = blackbox.get_classes()
                 prediction = blackbox.get_prediction(image)
                 busy = False

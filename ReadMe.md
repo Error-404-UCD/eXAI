@@ -43,6 +43,12 @@ pip install -r requirements.txt
 python app/server_launch.py
 ```
 
+- Run unit tests with
+
+```
+python -m unittest discover -s tests
+```
+
 
 <h2> To run with Docker</h2>
 

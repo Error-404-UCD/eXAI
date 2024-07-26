@@ -43,17 +43,17 @@ class FeedForwardNetwork:
             train_gen, 
             val_gen, 
             batch_size, 
-            checkpoint_path,
             epochs, 
             train_count, 
-            val_count):
+            val_count, 
+            checkpoint_path=None):
     
         steps_per_epoch = (train_count) // batch_size
         # print(f"len(train_X): {len(train_X)}")
         validation_steps = (val_count) // batch_size
         # print(f"len(train_y): {len(train_y)}")
 
-        if not (os.path.exists(checkpoint_path)):
+        if checkpoint_path == None or not (os.path.exists(checkpoint_path)):
             history = self.model.fit(
                 train_gen,
                 steps_per_epoch=steps_per_epoch,

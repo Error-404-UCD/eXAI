@@ -1,0 +1,27 @@
+name: Python Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'  # You can specify the Python version you need
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r Backend/requirements.txt
+        # Install additional dependencies if needed
+        # pip install shap tensorflow
+
+    - name: Run tests
+      run: |
+        pytest  # Assuming you are using pytest to run your tests

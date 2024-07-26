@@ -30,7 +30,9 @@ class Imager:
   
     def get_image_size(img_path):
         img = Image.open(img_path)
-        return img.size
+        size = img.size
+        img.close()
+        return size
     
 
     def img_to_array(img):
