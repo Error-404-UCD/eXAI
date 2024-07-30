@@ -8,12 +8,53 @@ from sklearn.model_selection import train_test_split
 Image.MAX_IMAGE_PIXELS = None
 
 class Data_Loader:
+    """
+    A class used to load and preprocess image data for training and validation.
+
+    Methods
+    -------
+    __init__(self, image_folder, target_img_width=150, target_img_height=150, batch_size=32)
+        Initializes the Data_Loader with the specified parameters and prepares the dataset.
+    
+    checkset_target_size(self, img_path, target_img_width, target_img_height)
+        Checks and sets the target image size based on the first image in the dataset.
+
+    data_generator(self, file_paths, labels, batch_size, img_height, img_width)
+        Generates batches of image data and labels for training or validation.
+
+    create_generators(self)
+        Creates data generators for training and validation datasets.
+
+    get_validation_images(self, count=0)
+        Returns a specified number of validation images.
+
+    get_train_count(self)
+        Returns the number of training images.
+
+    get_val_count(self)
+        Returns the number of validation images.
+    """
     def __init__(
             self, 
             image_folder,
             target_img_width=150, 
             target_img_height=150,
             batch_size=32):
+        
+        """
+        Init on class instantiation, everything to be able to run the app on server.
+
+        Parameters
+        ----------
+        image_folder : str
+            The path to the folder containing the images.
+        target_img_width : int, optional
+            The target width for resizing images. Default is 150. Use -1 to keep original width.
+        target_img_height : int, optional
+            The target height for resizing images. Default is 150. Use -1 to keep original height.
+        batch_size : int, optional
+            The number of images per batch. Default is 32.
+        """
         
         self.image_folder = image_folder
         self.batch_size = (batch_size)
@@ -55,6 +96,22 @@ class Data_Loader:
         self.create_generators()
         
     def checkset_target_size(self, img_path, target_img_width, target_img_height):
+        """
+        Check and set the target image size based on the first image in the dataset.
+
+        Parameters
+        ----------
+        img_path : str
+            The path to an image file.
+        target_img_width : int
+            The target width for resizing images.
+        target_img_height : int
+            The target height for resizing images.
+
+        Returns
+        -------
+        None
+        """
         size = Imager.get_image_size(img_path)
         if target_img_width == -1:
             self.target_img_width = size[0]
@@ -66,6 +123,27 @@ class Data_Loader:
             self.target_img_height = target_img_height
     
     def data_generator(self, file_paths, labels, batch_size, img_height, img_width):
+        """
+        Generate batches of image data and labels for training or validation.
+
+        Parameters
+        ----------
+        file_paths : list
+            List of paths to image files.
+        labels : list
+            List of labels corresponding to the images.
+        batch_size : int
+            The number of images per batch.
+        img_height : int
+            The height to which images are resized.
+        img_width : int
+            The width to which images are resized.
+
+        Yields
+        ------
+        tuple
+            A tuple (images, labels) where images is a numpy array of image data and labels is a numpy array of labels.
+        """
         num_samples = len(file_paths)
         while True:
             for offset in range(0, num_samples, batch_size):
@@ -80,7 +158,13 @@ class Data_Loader:
                 yield np.array(images), np.array(batch_labels)
 
     def create_generators(self):
-        
+        """
+        Create data generators for training and validation datasets.
+
+        Returns
+        -------
+        None
+        """
         self.train_generator = self.data_generator(
             self.train_paths, 
             self.train_labels, 
@@ -95,6 +179,19 @@ class Data_Loader:
             self.target_img_width)
         
     def get_validation_images(self, count=0):
+        """
+        Get a specified number of validation images.
+
+        Parameters
+        ----------
+        count : int, optional
+            The number of validation images to return. Default is 0, which returns all validation images.
+
+        Returns
+        -------
+        list
+            A list of validation images.
+        """
         if count < 0 or count > len(self.val_paths):
             print("Warning! Check your count when getting validation images. Currently returning all possible images")
             count = len(self.val_paths)
@@ -111,7 +208,23 @@ class Data_Loader:
         return images
         
     def get_train_count(self):
+        """
+        Get the number of training images.
+
+        Returns
+        -------
+        int
+            The number of training images.
+        """
         return len(self.train_paths)
 
     def get_val_count(self):
+        """
+        Get the number of validation images.
+
+        Returns
+        -------
+        int
+            The number of validation images.
+        """
         return len(self.val_paths)
