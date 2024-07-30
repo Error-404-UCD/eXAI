@@ -35,19 +35,6 @@ class FileManager:
                 print(f"Renamed: {old_path} -> {new_path}")
 
 if __name__ == "__main__":
-    """
-    The main function that checks if the provided root directory is valid 
-    and then calls the rename_files_in_directory method to rename files.
-
-    Parameters
-    ----------
-    root_directory : str
-        The path to the root directory where files need to be renamed.
-    
-    Returns
-    -------
-    None
-    """
     root_directory = "./../../data/MNIST"
     if os.path.isdir(root_directory):
         FileManager.rename_files_in_directory(root_directory)
