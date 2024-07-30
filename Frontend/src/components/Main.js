@@ -7,6 +7,7 @@ import RightHalf from './RightHalf';
 const Main = () => {
     const [data, setData] = useState(null);
     const [imgUrl, setImgUrl] = useState(null);
+    const [isFetching, setIsFetching] = useState(false);
     const uploadLink = "http://127.0.0.1:5000/limeshapexplain/gradient=False&&background=100&&mlModel=";
 
     let busy = false;
@@ -22,6 +23,7 @@ const Main = () => {
 
         if (!busy) {
             busy = true;
+            setIsFetching(true);
             axios
               .post(routeLink, formData, {
                 headers: {
@@ -35,17 +37,19 @@ const Main = () => {
               .catch((error) => {
                 console.log(error);
               })
-              .finally(() => { busy = false; })
+              .finally(() => { 
+                busy = false; 
+                setIsFetching(false);
+              });
         } else {
             console.log("Wait! I am busy ;)")
         }
-        
     };
 
     return (
-        <div className="flex flex-row justify-center">
+        <div className="flex flex-row justify-center h-screen overflow-auto">
             <LeftHalf fetchData={fetchData} />
-            <RightHalf imageUrl={imgUrl} data={data} />
+            <RightHalf imageUrl={imgUrl} data={data} isFetching={isFetching} />
         </div>
     );
 };

@@ -189,10 +189,11 @@ const Canvas = ({
               checked={isPaintEnabled}
               onChange={() => setIsPaintEnabled(!isPaintEnabled)}
             />
-            <div className="w-12 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700">
+            <div className="relative inline-block w-12 h-6">
+              <div className="absolute inset-0 bg-gray-200 rounded-full"></div>
               <div
-                className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-                  isPaintEnabled ? "translate-x-6" : ""
+                className={`absolute w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                  isPaintEnabled ? "translate-x-6 bg-green-500" : "bg-red-500"
                 }`}
               ></div>
             </div>
