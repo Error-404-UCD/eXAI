@@ -115,3 +115,6 @@ Dataset sources
 - Kaggle Astronomy (https://www.kaggle.com/datasets/subhamshome/esa-hubble-images-3-classes?resource=download)
 - Kaggle Bone Marrow (https://www.kaggle.com/datasets/andrewmvd/bone-marrow-cell-classification)
 - Kaggle MNIST (https://www.kaggle.com/datasets/scolianni/mnistasjpg)
+
+AWS Setup Guide
+- Setup Nginx as reverse proxy on EC2 instance (https://medium.com/@imageadhikari/setup-nginx-as-reverse-proxy-on-ec2-instance-3c6820b6467b)
