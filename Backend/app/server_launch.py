@@ -1,15 +1,15 @@
-from app.utils.imager import Imager
-from app.utils.numpy_array_encoder import NumpyArrayEncoder
-from app.utils.converter import Converter
+from utils.imager import Imager
+from utils.numpy_array_encoder import NumpyArrayEncoder
+from utils.converter import Converter
 import configparser
 from flask import Flask, request
 from flask_cors import CORS
 import os
 import json
-from app.data_loader import DataLoader
-from app.feed_forward_network import FeedForwardNetwork
-from app.shap_explainer import ShapExplainer
-from app.lime_explainer import LimeExplainer
+from data_loader import DataLoader
+from feed_forward_network import FeedForwardNetwork
+from shap_explainer import ShapExplainer
+from lime_explainer import LimeExplainer
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
