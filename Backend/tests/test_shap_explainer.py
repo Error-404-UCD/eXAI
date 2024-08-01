@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 import numpy as np
 import tensorflow as tf
-from app.shap_explainer import ShapExplainer
+from shap_explainer import ShapExplainer
 
 class TestShapExplainer(unittest.TestCase):
     

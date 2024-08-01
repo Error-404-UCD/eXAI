@@ -1,7 +1,7 @@
 import unittest
 import json
 import numpy as np
-from app.utils.numpy_array_encoder import NumpyArrayEncoder
+from utils.numpy_array_encoder import NumpyArrayEncoder
 
 class TestNumpyArrayEncoder(unittest.TestCase):
 

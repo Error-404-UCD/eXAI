@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from app.feed_forward_network import FeedForwardNetwork
+from feed_forward_network import FeedForwardNetwork
 import tempfile
 import os
 import tensorflow as tf

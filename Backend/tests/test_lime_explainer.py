@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 import numpy as np
-from app.lime_explainer import LimeExplainer
+from lime_explainer import LimeExplainer
 
 class TestLimeExplainer(unittest.TestCase):
     

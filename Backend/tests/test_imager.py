@@ -3,7 +3,7 @@ import tempfile
 import os
 from PIL import Image
 import numpy as np
-from app.utils.imager import Imager
+from utils.imager import Imager
 
 
 class TestImager(unittest.TestCase):

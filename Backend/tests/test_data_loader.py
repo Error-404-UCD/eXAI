@@ -3,8 +3,8 @@ import os
 import tempfile
 from PIL import Image
 import numpy as np
-from app.utils.imager import Imager
-from app.data_loader import DataLoader
+from utils.imager import Imager
+from data_loader import DataLoader
 
 class TestDataLoader(unittest.TestCase):
     

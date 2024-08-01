@@ -1,5 +1,11 @@
 import unittest
-from app.utils.converter import Converter
+import sys
+import os
+
+# Add the parent directory of 'app' to sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
+
+from utils.converter import Converter
 
 class TestConverter(unittest.TestCase):
     
