@@ -21,21 +21,31 @@ if __name__ == "__main__":
     print(list(config.keys()))
 
     # Get configuration constants
+    # Path to astronomy Dataset
     astro_img_folder            = script_dir + "/" + str(config["MLMODEL"]["AstronomyImagesPath"])
+    # Path to store Checkpoints
     astro_checkpoint_path       = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
                                     config["MLMODEL"]["AstronomyModelCheckpointName"])
+    # Path to MNIST Dataset
     mnist_img_folder            = script_dir + "/" + str(config["MLMODEL"]["MNISTImagesPath"])
+    # Path to store Checkpoints
     mnist_checkpoint_path       = script_dir + "/" + str(config["MLMODEL"]["CheckpointsPath"] +
                                     config["MLMODEL"]["MNISTModelCheckpointName"])
-    
+    # Constant for desired image width
     target_img_width            = int(config["MLMODEL"]["TargetImageWidth"])
+    # Constant for desired image Height
     target_img_height           = int(config["MLMODEL"]["TargetImageHeight"])
+    # Constant for desired Batch Size
     batch_size                  = int(config["MLMODEL"]["BatchSize"])
+    # Constant to set target dimensions
     change_target_dim           = int(config["MLMODEL"]["ChangeImageTargetDim"])
+    # Constant for default dataset
     default_dataset             = str(config["MLMODEL"]["DefaultDatasetSelection"])
+    # Constant to set number of epochs
     epochs                      = int(config["MLMODEL"]["Epochs"])
-
+    # Constant to set default ip_address
     ip_address                  = str(config["ROUTING"]["IP"])
+    # Constant to set default port
     port                        = int(config["ROUTING"]["PORT"])
     
     print(f"mnist_img_folder: {mnist_img_folder}")
@@ -84,9 +94,7 @@ if __name__ == "__main__":
                                 data_loader.target_img_height,
                                 data_loader.class_names)
     
-    # Train the model to get better results
-    # ffn_tiny.train
- 
+    
     app = Flask(__name__)
     CORS(app)
     busy = False

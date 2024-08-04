@@ -5,6 +5,17 @@ import os
 import numpy as np
 
 class FeedForwardNetwork:
+    """
+    Init on class instantiation, everything to be able to run the app on server.
+    Parameters
+    ----------
+    target_img_width : int
+        Target width for the input images.
+    target_img_height : int
+        Target height for the input images.
+    class_names : String[]
+        Array of class names for the classification task.
+    """
     def __init__(
                 self, 
                 target_img_width,
@@ -17,6 +28,9 @@ class FeedForwardNetwork:
         self.build()
 
     def build(self):
+        """
+        Builds the convolutional neural network model.
+        """
         self.model = Sequential([
             Input(shape=(
                 self.target_img_height, 
@@ -47,11 +61,27 @@ class FeedForwardNetwork:
             train_count, 
             val_count, 
             checkpoint_path=None):
-    
+        """
+        Trains the model using the provided data generators.
+        Parameters
+        ----------
+        train_gen : Iterator
+            Training data Iterator.
+        val_gen : Iterator
+            Validation data Iterator.
+        batch_size : int
+            Number of images per batch.
+        epochs : int
+            Number of training epochs.
+        train_count : int
+            Number of training images.
+        val_count : int
+            Number of validation images.
+        checkpoint_path : str
+            Path to save or load the model checkpoint, by default None.
+        """   
         steps_per_epoch = (train_count) // batch_size
-        # print(f"len(train_X): {len(train_X)}")
         validation_steps = (val_count) // batch_size
-        # print(f"len(train_y): {len(train_y)}")
 
         if checkpoint_path == None or not (os.path.exists(checkpoint_path)):
             history = self.model.fit(
@@ -63,13 +93,42 @@ class FeedForwardNetwork:
         else:
             self.model = tf.keras.models.load_model(self.checkpoint_path)
 
-    def predict(self, imgs):      
+    def predict(self, imgs):
+            """
+            Makes predictions on the provided images.
+            Parameters
+            ----------
+            imgs : Tensor
+                Array of images to predict.
+            Returns
+            -------
+            Tensor
+                Predicted class probabilities.
+            """      
             return self.model(imgs)
     
     def get_classes(self):
+        """
+        Returns the array of class names.
+        Returns
+        -------
+        String[]
+            Array of class names.
+        """
         return self.class_names
     
     def get_prediction(self, img):
+        """
+        Gets the predicted class for a single image.
+        Parameters
+        ----------
+        img : Tensor
+            Image to predict.
+        Returns
+        -------
+        str
+            Predicted class name.
+        """
         predictions = self.predict(img)
         predicted_class = np.argmax(predictions[0])
         return self.class_names[predicted_class]

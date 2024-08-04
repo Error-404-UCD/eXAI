@@ -8,6 +8,19 @@ from sklearn.model_selection import train_test_split
 Image.MAX_IMAGE_PIXELS = None
 
 class DataLoader:
+    """
+    Init on class instantiation, everything to be able to run the app on server.
+    Parameters
+    ----------
+    image_folder : String[]
+        Path to the folder containing the images.
+    target_img_width : int
+        Desired width of the output images, by default 150.
+    target_img_height : int
+        Desired height of the output images, by default 150.
+    batch_size : int
+        Number of images per batch, by default 32.
+    """
     def __init__(
             self, 
             image_folder,
@@ -55,6 +68,17 @@ class DataLoader:
         self.create_generators()
         
     def checkset_target_size(self, img_path, target_img_width, target_img_height):
+        """
+        Checks and sets the target size for images.
+        Parameters
+        ----------
+        img_path : str
+            Path to a sample image to check its size.
+        target_img_width : int
+            Desired width of the output images.
+        target_img_height : int
+            Desired height of the output images.
+        """
         size = Imager.get_image_size(img_path)
         if target_img_width == -1:
             self.target_img_width = size[0]
@@ -66,6 +90,27 @@ class DataLoader:
             self.target_img_height = target_img_height
     
     def data_generator(self, file_paths, labels, batch_size, img_height, img_width):
+        """
+        Data generator for creating batches of images and labels.
+        Parameters
+        ----------
+        file_paths : String[]
+            String array of file paths to the images.
+        labels : String[]
+            String array of labels corresponding to the images.
+        batch_size : int
+            Number of images per batch.
+        img_height : int
+            Height of the output images.
+        img_width : int
+            Width of the output images.
+        Yields
+        ------
+        String[]
+            Batch of images.
+        String[]
+            Batch of labels.
+        """
         num_samples = len(file_paths)
         while True:
             for offset in range(0, num_samples, batch_size):
@@ -80,7 +125,9 @@ class DataLoader:
                 yield np.array(images), np.array(batch_labels)
 
     def create_generators(self):
-        
+        """
+        Creates training and validation data generators.
+        """
         self.train_generator = self.data_generator(
             self.train_paths, 
             self.train_labels, 
@@ -95,8 +142,18 @@ class DataLoader:
             self.target_img_width)
         
     def get_validation_images(self, count=-1):
+        """
+        Retrieves a specified number of validation images.
+        Parameters
+        ----------
+        count : int
+            Number of validation images to retrieve, by default -1 (all images).
+        Returns
+        -------
+        String[]
+            String array of validation images.
+        """
         if count < 0 or count > len(self.val_paths):
-            # print("DataLoader Warning! Check your count when getting validation images. Currently returning all possible images")
             count = len(self.val_paths)
         
         images = []
@@ -111,7 +168,21 @@ class DataLoader:
         return images
         
     def get_train_count(self):
+        """
+        Returns the number of training images.
+        Returns
+        -------
+        int
+            Number of training images.
+        """
         return len(self.train_paths)
 
     def get_val_count(self):
+        """
+        Returns the number of validation images.
+        Returns
+        -------
+        int
+            Number of validation images.
+        """
         return len(self.val_paths)

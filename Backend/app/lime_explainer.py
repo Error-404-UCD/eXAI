@@ -1,9 +1,24 @@
 from lime import lime_image
 
 class LimeExplainer:
+    """
+    Provides LIME explanations for image classification models.
+    """
     def get_explanation(test_image, predict_fn):
+        """
+        Generates a LIME explanation for a given test image.
+        Parameters
+        ----------
+        test_image : Tensor
+            Image for which the explanation is to be generated.
+        predict_fn : function*
+            Prediction function of the trained model.
+        Returns
+        -------
+        dict
+            A dictionary containing the mask and local explanations.
+        """
         lime_explainer = lime_image.LimeImageExplainer()
-        # print(predict_fn)
         lime_explanation = lime_explainer.explain_instance(test_image[0], 
                                                         predict_fn, 
                                                         hide_color=0, 
