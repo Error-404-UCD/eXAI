@@ -27,10 +27,24 @@ const LeftHalf = ({ fetchData }) => {
     };
 
     return (
-      <div className="bottom-half py-5 px-5 bg-slate-200">
-        <div className="flex flex-col items-center h-screen">
-          <div className="flex flex-none justify-start w-full py-4">
-            <div className="upload-section mr-4">
+      <div className="bottom-half py-5 px-5 bg-slate-200 h-full min-h-screen overflow-hidden" style={{height: '820px'}}>
+        <div className="flex flex-col items-center h-full">
+          <div className="w-full mb-4">
+            <label htmlFor="model-select" className="block text-lg mb-2">CHOOSE ML MODEL:</label>
+            <select
+              id="model-select"
+              defaultValue={"M1"}
+              onChange={handleModelChange}
+              className="rounded-md text-sm font-semibold bg-white text-pink-700 shadow-md border border-gray-300 focus:ring focus:ring-pink-200 focus:border-pink-500 w-full"
+              style={{ height: '40px', fontSize: '16px', padding: '8px' }}
+            >
+              <option value="M1">Fully trained CNN Model</option>
+              <option value="M2">Half trained CNN Model</option>
+            </select>
+          </div>
+
+          <div className="flex w-full mb-4 space-x-4">
+            <div className="flex-1">
               <input
                 type="file"
                 accept="image/*"
@@ -40,13 +54,13 @@ const LeftHalf = ({ fetchData }) => {
               />
               <label
                 htmlFor="file-upload"
-                className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
+                className="flex items-center justify-center py-2 px-4 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md w-full text-center"
+                style={{ height: '40px', fontSize: '16px' }}
               >
                 UPLOAD IMAGE
               </label>
             </div>
-
-            <div className="predict-section">
+            <div className="flex-1">
               <input
                 type="button"
                 accept="image/*"
@@ -56,7 +70,8 @@ const LeftHalf = ({ fetchData }) => {
               />
               <label
                 htmlFor="predict-class"
-                className="py-5 px-10 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md"
+                className="flex items-center justify-center py-2 px-4 rounded-md text-sm font-semibold bg-white text-pink-700 hover:bg-pink-100 cursor-pointer shadow-md w-full text-center"
+                style={{ height: '40px', fontSize: '16px' }}
               >
                 PREDICT CLASS
               </label>
@@ -72,25 +87,6 @@ const LeftHalf = ({ fetchData }) => {
               isPaintable={true}
               onExport={(url) => setImageFile(url)}
             />
-          </div>
-
-          {/* <div className="flex flex-row mr-4 text-lg py-5">
-                    <div className="px-5">DATASET</div>
-                    <select
-                        // onChange={console.log("Dataset changed")}
-                        defaultValue={"MNIST"}
-                    >
-                        <option value="MNIST">MNIST</option>
-                        <option value="Astro">Astronomy</option>
-                        <option value="BM">Bone Marrow</option>
-                    </select>
-                </div> */}
-          <div className="flex flex-row mr-4 text-lg py-3">
-            <div className="px-5">ML Model</div>
-            <select defaultValue={"M1"} onChange={handleModelChange}>
-              <option value="M1">Super_CNN</option>
-              <option value="M2">Tiny_CNN</option>
-            </select>
           </div>
         </div>
       </div>

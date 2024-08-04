@@ -38,7 +38,7 @@ class Imager:
             The resized PIL Image object.
         """
         img = Image.open(img_path)
-        if img.mode == 'L':
+        if img.mode != 'RGB':
             img = img.convert('RGB')
 
         tx = target_size[0]
@@ -94,7 +94,9 @@ class Imager:
         """
 
         img = Image.open(img_path)
-        return img.size
+        size = img.size
+        img.close()
+        return size
     
 
     def img_to_array(img):

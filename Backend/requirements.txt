@@ -1,4 +1,4 @@
-shap>=0.45.0
+shap
 lime>=0.2.0.0
 pillow
 tensorflow

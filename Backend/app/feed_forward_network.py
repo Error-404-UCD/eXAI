@@ -5,46 +5,11 @@ import os
 import numpy as np
 
 class FeedForwardNetwork:
-    """
-    A class used to define, build, train, and use a convolutional neural network for image classification.
-
-    Methods
-    -------
-    __init__(self, target_img_width, target_img_height, class_names)
-        Initializes the FeedForwardNetwork with the specified parameters and builds the model.
-    
-    build(self)
-        Builds the CNN model with the specified architecture.
-
-    train(self, train_gen, val_gen, batch_size, checkpoint_path, epochs, train_count, val_count)
-        Trains the CNN model using the provided training and validation generators.
-
-    predict(self, imgs)
-        Predicts the class probabilities for the given images.
-
-    get_classes(self)
-        Returns the class names.
-
-    get_prediction(self, img)
-        Returns the predicted class name for a single image.
-    """
     def __init__(
                 self, 
                 target_img_width,
                 target_img_height,
                 class_names):
-        """
-        Init on class instantiation, everything to be able to run the app on server.
-
-        Parameters
-        ----------
-        target_img_width : int
-            The target width for resizing images.
-        target_img_height : int
-            The target height for resizing images.
-        class_names : list
-            A list of class names for the classification task.
-        """
         self.target_img_width = target_img_width 
         self.target_img_height = target_img_height 
         self.class_names = class_names
@@ -52,17 +17,6 @@ class FeedForwardNetwork:
         self.build()
 
     def build(self):
-        """
-        Build the CNN model with the specified architecture.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
         self.model = Sequential([
             Input(shape=(
                 self.target_img_height, 
@@ -89,40 +43,17 @@ class FeedForwardNetwork:
             train_gen, 
             val_gen, 
             batch_size, 
-            checkpoint_path,
             epochs, 
             train_count, 
-            val_count):
-        
-        """
-        Train the CNN model using the provided training and validation generators.
-
-        Parameters
-        ----------
-        train_gen : generator
-            The training data generator.
-        val_gen : generator
-            The validation data generator.
-        batch_size : int
-            The number of images per batch.
-        checkpoint_path : str
-            The path to save the model checkpoints.
-        epochs : int
-            The number of epochs to train the model.
-        train_count : int
-            The total number of training images.
-        val_count : int
-            The total number of validation images.
-
-        Returns
-        -------
-        None
-        """
+            val_count, 
+            checkpoint_path=None):
     
         steps_per_epoch = (train_count) // batch_size
+        # print(f"len(train_X): {len(train_X)}")
         validation_steps = (val_count) // batch_size
+        # print(f"len(train_y): {len(train_y)}")
 
-        if not (os.path.exists(checkpoint_path)):
+        if checkpoint_path == None or not (os.path.exists(checkpoint_path)):
             history = self.model.fit(
                 train_gen,
                 steps_per_epoch=steps_per_epoch,
@@ -132,47 +63,13 @@ class FeedForwardNetwork:
         else:
             self.model = tf.keras.models.load_model(self.checkpoint_path)
 
-    def predict(self, imgs):
-            """
-            Predict the class probabilities for the given images.
-
-            Parameters
-            ----------
-            imgs : np.array
-                The images to predict.
-
-            Returns
-            -------
-            np.array
-                The predicted class probabilities for each image.
-            """      
+    def predict(self, imgs):      
             return self.model(imgs)
     
     def get_classes(self):
-        """
-        Get the class names.
-
-        Returns
-        -------
-        list
-            A list of class names.
-        """
         return self.class_names
     
     def get_prediction(self, img):
-        """
-        Get the predicted class name for a single image.
-
-        Parameters
-        ----------
-        img : np.array
-            The image to predict.
-
-        Returns
-        -------
-        str
-            The predicted class name.
-        """
         predictions = self.predict(img)
         predicted_class = np.argmax(predictions[0])
         return self.class_names[predicted_class]
