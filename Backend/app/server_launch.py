@@ -98,8 +98,8 @@ if __name__ == "__main__":
     app = Flask(__name__)
     CORS(app)
     busy = False
-    @app.route('/limeshapexplain/gradient=<gradient>&&background=<bg_count>&&mlModel=<model>', methods=['GET', 'POST'])
-    def limeshap_explain(gradient, bg_count, model):
+    @app.route('/limeshapexplain/background=<bg_count>&&mlModel=<model>', methods=['GET', 'POST'])
+    def limeshap_explain(bg_count, model):
         global busy
         print(f"Req: {len(request.files)}")
         if request.method == 'POST':
@@ -110,7 +110,6 @@ if __name__ == "__main__":
                     (target_img_width,
                     target_img_height))
                 
-                gradient = Converter.str2bool(gradient)
                 bg_count = int(bg_count)
                 blackbox = ffn_super if model == "M1" else ffn_tiny
                 busy = True

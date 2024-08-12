@@ -8,7 +8,7 @@ const Main = () => {
     const [data, setData] = useState(null);
     const [imgUrl, setImgUrl] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
-    const uploadLink = "http://127.0.0.1:5000/limeshapexplain/gradient=False&&background=100&&mlModel=";
+    const uploadLink = "http://127.0.0.1:5000/limeshapexplain/background=100&&mlModel=";
 
     let busy = false;
     const fetchData = (imgFile, mlModel) => {
