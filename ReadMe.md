@@ -1,4 +1,4 @@
-<h1> eXAI Image Insight </h1>
+<h1>eXAI Image Insights</h1>
 
 -----
 <h2> BACKEND </h2>
